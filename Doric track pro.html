@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>DoricTrack Pro | Doric Multimedia Pvt Ltd</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #fff;
+      --ink: #182230;
+      --muted: #687589;
+      --line: #e3e8ef;
+      --brand: #2563eb;
+      --brand2: #1d4ed8;
+      --green: #16a34a;
+      --red: #dc2626;
+      --amber: #d97706;
+      --shadow: 0 8px 30px rgba(20, 35, 60, .08)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink)
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    .top {
+      height: 68px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .logoMark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800
+    }
+
+    .logo h1 {
+      font-size: 18px;
+      margin: 0
+    }
+
+    .logo small {
+      color: var(--muted)
+    }
+
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 68px)
+    }
+
+    .side {
+      width: 230px;
+      background: #111827;
+      color: #cbd5e1;
+      padding: 18px 12px;
+      position: fixed;
+      top: 68px;
+      bottom: 0;
+      overflow: auto
+    }
+
+    .navbtn {
+      width: 100%;
+      padding: 12px 14px;
+      border: 0;
+      background: transparent;
+      color: #cbd5e1;
+      text-align: left;
+      border-radius: 10px;
+      margin: 3px 0
+    }
+
+    .navbtn:hover,
+    .navbtn.active {
+      background: #1f2937;
+      color: #fff
+    }
+
+    .main {
+      margin-left: 230px;
+      padding: 24px;
+      width: calc(100% - 230px)
+    }
+
+    .page {
+      display: none
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .authOverlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: 20px
+    }
+
+    .authCard {
+      width: min(420px, 100%);
+      background: #fff;
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, .28)
+    }
+
+    .authBrand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px
+    }
+
+    .authBrand .logoMark {
+      flex: none
+    }
+
+    .authCard h2 {
+      margin: 0 0 6px;
+      font-size: 25px
+    }
+
+    .authCard .sub {
+      margin-bottom: 22px
+    }
+
+    .authCard .field {
+      margin-bottom: 14px
+    }
+
+    .authCard .field label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .authCard input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none
+    }
+
+    .authCard input:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12)
+    }
+
+    .authError {
+      color: #b91c1c;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 9px 11px;
+      border-radius: 9px;
+      margin-bottom: 12px;
+      display: none
+    }
+
+    .authHint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.5
+    }
+
+    .sessionBadge {
+      font-size: 12px;
+      color: var(--muted);
+      margin-right: 8px
+    }
+
+    .unsavedGuard {
+      display: none
+    }
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px
+    }
+
+    .title h2 {
+      margin: 0;
+      font-size: 26px
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-top: 5px
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 15px;
+      font-weight: 600
+    }
+
+    .primary {
+      background: var(--brand);
+      color: #fff
+    }
+
+    .primary:hover {
+      background: var(--brand2)
+    }
+
+    .light {
+      background: #eef2f7;
+      color: #334155
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: #991b1b
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 18px;
+      box-shadow: var(--shadow)
+    }
+
+    .metric {
+      font-size: 27px;
+      font-weight: 800;
+      margin-top: 7px
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .accent {
+      font-size: 22px
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px
+    }
+
+    .panel h3 {
+      margin: 0 0 15px
+    }
+
+    .formgrid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 13px
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid #d6dde7;
+      border-radius: 8px;
+      background: #fff;
+      outline: none
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: #2563eb
+    }
+
+    .field.full {
+      grid-column: 1/-1
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 16px
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px
+    }
+
+    .filters input,
+    .filters select {
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff
+    }
+
+    .tablewrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 1050px;
+      background: #fff
+    }
+
+    th,
+    td {
+      padding: 11px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      position: sticky;
+      top: 0
+    }
+
+    tr:hover td {
+      background: #fafcff
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700
+    }
+
+    .pill.y {
+      background: #dcfce7;
+      color: #166534
+    }
+
+    .pill.n {
+      background: #fee2e2;
+      color: #991b1b
+    }
+
+    .pill.f {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .bar {
+      height: 9px;
+      background: #e9eef5;
+      border-radius: 20px;
+      overflow: hidden
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      border-radius: 20px
+    }
+
+    .empty {
+      text-align: center;
+      padding: 35px;
+      color: var(--muted)
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #111827;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      display: none;
+      z-index: 30
+    }
+
+    .kpirow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px
+    }
+
+    .mini {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 12px
+    }
+
+    @media(max-width:900px) {
+      .side {
+        width: 72px
+      }
+
+      .side .txt {
+        display: none
+      }
+
+      .main {
+        margin-left: 72px;
+        width: calc(100% - 72px)
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .formgrid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .grid2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+      .top {
+        padding: 0 12px
+      }
+
+      .main {
+        padding: 14px
+      }
+
+      .cards {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .formgrid {
+        grid-template-columns: 1fr
+      }
+
+      .field.full {
+        grid-column: auto
+      }
+
+      .title {
+        align-items: flex-start;
+        flex-direction: column
+      }
+    }
+
+    .taskStats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .taskStat {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow)
+    }
+
+    .taskStat .big {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 5px
+    }
+
+    .taskBoard {
+      display: grid;
+      gap: 10px
+    }
+
+    .taskItem {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--brand);
+      border-radius: 13px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      box-shadow: 0 3px 12px rgba(20, 35, 60, .04)
+    }
+
+    .taskItem.overdue {
+      border-left-color: var(--red);
+      background: #fffafa
+    }
+
+    .taskItem.today {
+      border-left-color: var(--amber)
+    }
+
+    .taskItem.completed {
+      border-left-color: var(--green);
+      background: #f6fff8
+    }
+
+    .taskMain {
+      min-width: 0
+    }
+
+    .taskName {
+      font-size: 15px;
+      font-weight: 800
+    }
+
+    .taskName.done {
+      text-decoration: line-through;
+      color: #64748b
+    }
+
+    .taskMeta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px
+    }
+
+    .taskActions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: flex-end
+    }
+
+    .priorityHigh {
+      background: #fee2e2 !important;
+      color: #991b1b !important
+    }
+
+    .priorityMedium {
+      background: #fef3c7 !important;
+      color: #92400e !important
+    }
+
+    .priorityLow {
+      background: #e0f2fe !important;
+      color: #075985 !important
+    }
+
+    .reminderGrid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px
+    }
+
+    .reminderCard {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow)
+    }
+
+    .reminderCard .big {
+      font-size: 28px;
+      font-weight: 800;
+      margin-top: 5px
+    }
+
+    .reminderList {
+      display: grid;
+      gap: 10px
+    }
+
+    .reminderItem {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--amber);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center
+    }
+
+    .reminderItem.overdue {
+      border-left-color: var(--red)
+    }
+
+    .reminderItem.today {
+      border-left-color: var(--brand)
+    }
+
+    .reminderItem.done {
+      opacity: .6
+    }
+
+    .reminderMeta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px
+    }
+
+    .reminderActions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      justify-content: flex-end
+    }
+
+    .reminderActions .btn {
+      white-space: nowrap
+    }
+
+    @media(max-width:900px) {
+      .reminderGrid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .taskStats {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+      .reminderGrid {
+        grid-template-columns: 1fr
+      }
+
+      .taskStats {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .taskItem {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .taskActions {
+        justify-content: flex-start
+      }
+
+      .reminderItem {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .reminderActions {
+        justify-content: flex-start
+      }
+    }
+
+    .exportModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .48);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100
+    }
+
+    .exportModal.show {
+      display: flex
+    }
+
+    .exportBox {
+      width: min(460px, calc(100% - 28px));
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, .25)
+    }
+
+    .exportBox h3 {
+      margin: 0 0 6px
+    }
+
+    .exportBox p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 13px
+    }
+
+    .exportOptions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px
+    }
+
+    .exportOption {
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 11px;
+      padding: 13px;
+      text-align: left;
+      font-weight: 700
+    }
+
+    .exportOption:hover {
+      border-color: var(--brand);
+      background: #eff6ff
+    }
+
+    .exportOption small {
+      display: block;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 3px
+    }
+
+    .exportClose {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px
+    }
+
+    .leadCards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .leadCard {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 15px;
+      box-shadow: 0 5px 18px rgba(15, 23, 42, .05)
+    }
+
+    .leadCard .label {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .leadCard .big {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 5px
+    }
+
+    .leadItem {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 14px;
+      margin: 10px 0;
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px
+    }
+
+    .leadMain {
+      min-width: 0
+    }
+
+    .leadName {
+      font-weight: 800;
+      font-size: 16px
+    }
+
+    .leadMeta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px
+    }
+
+    .leadActions {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .leadStatus {
+      font-weight: 700
+    }
+
+    .leadStatus.qualified {
+      color: #15803d
+    }
+
+    .leadStatus.not {
+      color: #b91c1c
+    }
+
+    .leadStatus.follow {
+      color: #b45309
+    }
+
+    @media(max-width:1000px) {
+      .leadCards {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff
+      }
+
+      .top,
+      .side,
+      .no-print,
+      .actions,
+      .filters {
+        display: none !important
+      }
+
+      .main {
+        margin: 0;
+        width: 100%;
+        padding: 0
+      }
+
+      .page {
+        display: none !important
+      }
+
+      .page.printable {
+        display: block !important
+      }
+
+      .printCompany {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 3px
+      }
+
+      .printTitle {
+        font-size: 15px;
+        margin-bottom: 14px
+      }
+
+      .panel,
+      .card {
+        box-shadow: none;
+        border: 1px solid #ddd
+      }
+
+      .tablewrap {
+        overflow: visible
+      }
+
+      table {
+        min-width: 0;
+        font-size: 9px
+      }
+
+      th,
+      td {
+        padding: 5px
+      }
+
+      .printHeader {
+        display: block !important
+      }
+    }
+
+    .printHeader {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+  <div id="exportModal" class="exportModal" onclick="if(event.target===this)closeExport()">
+    <div class="exportBox">
+      <h3>Export Report</h3>
+      <p id="exportDescription">Choose the format. Current filters and report data will be used.</p>
+      <div class="exportOptions">
+        <button class="exportOption" onclick="performExport('pdf')">📄 PDF<small>Print / Save as PDF</small></button>
+        <button class="exportOption" onclick="performExport('excel')">📊 Excel<small>Excel-compatible
+            .xls</small></button>
+        <button class="exportOption" onclick="performExport('csv')">🧾 CSV<small>Raw table data</small></button>
+        <button class="exportOption" onclick="performExport('html')">🌐 HTML<small>Visual report with
+            formatting</small></button>
+      </div>
+      <div class="exportClose"><button class="btn light" onclick="closeExport()">Cancel</button></div>
+    </div>
+  </div>
+  <div id="authOverlay" class="authOverlay">
+    <div class="authCard">
+      <div class="authBrand">
+        <div class="logoMark">D</div>
+        <div><b>DoricTrack Pro</b>
+          <div class="sub">DORIC MULTIMEDIA PVT LTD</div>
+        </div>
+      </div>
+      <h2 id="authTitle">Sign In</h2>
+      <div class="sub" id="authSubtitle">Enter your DoricTrack ID and password to continue.</div>
+      <div id="authError" class="authError"></div>
+      <div class="field"><label>DoricTrack ID</label><input id="authUser" autocomplete="username"
+          placeholder="Enter your ID"></div>
+      <div class="field"><label>Password</label><input id="authPass" type="password" autocomplete="current-password"
+          placeholder="Enter your password" onkeydown="if(event.key==='Enter')submitAuth()"></div>
+      <div id="authConfirmWrap" class="field" style="display:none"><label>Confirm Password</label><input
+          id="authConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password"
+          onkeydown="if(event.key==='Enter')submitAuth()"></div>
+      <button id="authBtn" class="btn primary" style="width:100%;padding:12px" onclick="submitAuth()">Sign In</button>
+      <div class="authHint" id="authHint">Your login is stored only in this browser. Closing the app signs you out
+        automatically; your CRM data is not deleted.</div>
+    </div>
+  </div>
+  <header class="top">
+    <div class="logo">
+      <div class="logoMark">D</div>
+      <div>
+        <h1>DoricTrack Pro</h1><small>DORIC MULTIMEDIA PVT LTD • Sales CRM</small>
+      </div>
+    </div>
+    <div><span class="sessionBadge" id="sessionUser"></span><button class="btn light"
+        onclick="backupData()">Backup</button> <button class="btn light" onclick="signOut()">Sign Out</button> <button
+        class="btn primary" onclick="showPage('visit')">＋ New Sales Visit</button></div>
+  </header>
+  <div class="layout">
+    <aside class="side">
+      <button class="navbtn active" data-page="dashboard" onclick="showPage('dashboard')">📊 <span
+          class="txt">Dashboard</span></button>
+      <button class="navbtn" data-page="visit" onclick="showPage('visit')">📝 <span class="txt">New Sales
+          Visit</span></button>
+      <button class="navbtn" data-page="visits" onclick="showPage('visits')">📋 <span class="txt">Sales Visit
+          Register</span></button>
+      <button class="navbtn" data-page="reports" onclick="showPage('reports')">📈 <span class="txt">Performance
+          Report</span></button>
+      <button class="navbtn" data-page="travel" onclick="showPage('travel')">🚗 <span class="txt">Travel
+          Claims</span></button>
+      <button class="navbtn" data-page="reminders" onclick="showPage('reminders')">🔔 <span
+          class="txt">Reminders</span></button>
+      <button class="navbtn" data-page="tasks" onclick="showPage('tasks')">✅ <span class="txt">Tasks</span></button>
+      <button class="navbtn" data-page="leads" onclick="showPage('leads')">📞 <span class="txt">Leads</span></button>
+      <button class="navbtn" data-page="settings" onclick="showPage('settings')">⚙️ <span
+          class="txt">Settings</span></button>
+    </aside>
+    <main class="main">
+
+      <section id="dashboard" class="page active">
+        <div class="title">
+          <div>
+            <h2>Sales Dashboard</h2>
+            <div class="sub">Your complete visit & sales performance at a glance.</div>
+          </div><button class="btn primary" onclick="openExport('dashboard')">Export</button>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="label">Total Visits</div>
+            <div class="metric" id="mVisits">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Deals Closed</div>
+            <div class="metric" id="mClosed">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Conversion Rate</div>
+            <div class="metric" id="mConv">0%</div>
+          </div>
+          <div class="card">
+            <div class="label">Sales Value</div>
+            <div class="metric" id="mSales">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Current Month Gross Margin</div>
+            <div class="metric" id="mGrossMargin">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Reference Commission</div>
+            <div class="metric" id="mRefCommission">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Net Company Profit</div>
+            <div class="metric" id="mProfit">₹0</div>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <div class="label">Travel Claim Entries</div>
+            <div class="metric" id="mTravelEntries">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Total Travel KM</div>
+            <div class="metric" id="mTravelKm">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Total Travel Claim</div>
+            <div class="metric" id="mTravelClaim">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">This Month Travel Claim</div>
+            <div class="metric" id="mTravelMonthClaim">₹0</div>
+          </div>
+        </div>
+        <div class="panel" style="margin-bottom:16px">
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+            <div>
+              <h3 style="margin:0">Travel Claims Overview</h3>
+              <div class="sub">Separate travel-expense summary — it does not affect sales or company profit.</div>
+            </div>
+            <button type="button" class="btn primary" onclick="showPage('travel')">View Travel Claims</button>
+          </div>
+          <div id="dashboardTravelClaims"></div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h3>Recent Visits</h3>
+            <div id="recent"></div>
+          </div>
+          <div class="panel">
+            <h3>Pipeline</h3>
+            <div id="pipeline"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Product Performance</h3>
+          <div id="productsDash"></div>
+        </div>
+      </section>
+
+      <section id="visit" class="page">
+        <div class="title">
+          <div>
+            <h2>New Customer Visit</h2>
+            <div class="sub">Capture every detail once and keep your sales history organized.</div>
+          </div>
+        </div>
+        <form id="visitForm" class="panel">
+          <div class="formgrid">
+            <div class="field"><label>Visit Date *</label><input id="vDate" type="date" required></div>
+            <div class="field"><label>Company Name *</label><input id="vCompany" required placeholder="ABC Enterprises">
+            </div>
+            <div class="field"><label>Owner / Decision Maker</label><input id="vOwner" placeholder="Name"></div>
+            <div class="field"><label>Reference / Lead Source</label><input id="vRef"
+                placeholder="CA / Existing Client / Walk-in"></div>
+            <div class="field"><label>Reference Commission % <span class="label">(of company
+                  margin)</span></label><input id="vRefPct" type="number" min="0" step="0.01" value="0"
+                placeholder="e.g. 20"></div>
+            <div class="field"><label>Contact Number</label><input id="vPhone" placeholder="10 digit mobile"></div>
+            <div class="field"><label>Industry</label><input id="vIndustry" placeholder="Trading / Manufacturing / CA">
+            </div>
+            <div class="field"><label>Travel Regarding / Visit Purpose</label><input id="vPurpose"
+                placeholder="Tally demo / Collection / AWS query / Follow-up"></div>
+            <div class="field"><label>Main Product</label><select id="vProduct"></select></div>
+            <div class="field"><label>Main Product Price (₹)</label><input id="vPrice" type="number" min="0"
+                placeholder="22500"></div>
+            <div class="field"><label>Deal Status</label><select id="vStatus">
+                <option>Closed</option>
+                <option>Hot Lead</option>
+                <option>Follow-up</option>
+                <option>Not Interested</option>
+                <option>Pending</option>
+              </select></div>
+            <div class="field"><label>Additional Product</label><select id="vAdditional"></select></div>
+            <div class="field"><label>Additional Product Price (₹)</label><input id="vAddPrice" type="number" min="0"
+                placeholder="4500"></div>
+            <div class="field"><label>Reference Commission (₹)</label><input id="vRefComm" type="number" min="0"
+                step="0.01" value="0" placeholder="Enter ₹ or use %"></div>
+            <div class="field"><label>Gross Company Margin (₹)</label><input id="vGrossMargin" type="number" readonly
+                value="0"></div>
+            <div class="field"><label>Net Company Profit (₹)</label><input id="vNetProfit" type="number" readonly
+                value="0"><small class="label">Formula: Gross Company Margin − Reference Commission</small></div>
+            <div class="field"><label>Next Follow-up Date</label><input id="vFollow" type="date"></div>
+            <div class="field"><label>Payment Status</label><select id="vPayment">
+                <option>Not Applicable</option>
+                <option>Pending</option>
+                <option>Received</option>
+                <option>Partial</option>
+              </select></div>
+            <div class="field full"><label>Visit Discussion / Requirement</label><textarea id="vDiscussion" rows="3"
+                placeholder="Requirement, objections, demo points, competitor, etc."></textarea></div>
+            <div class="field full"><label>Remarks / Next Action</label><textarea id="vRemarks" rows="3"
+                placeholder="Next action, commitment, follow-up notes..."></textarea></div>
+          </div>
+          <div class="actions"><button type="button" class="btn light" onclick="resetVisit()">Clear</button><button
+              class="btn primary">Save Visit</button></div>
+        </form>
+      </section>
+
+      <section id="visits" class="page">
+        <div class="title">
+          <div>
+            <h2>Sales Visit Register</h2>
+            <div class="sub">Search, filter, edit and export your complete visit history.</div>
+          </div><button class="btn primary" onclick="openExport('visits')">Export</button>
+        </div>
+        <div class="panel">
+          <div class="filters"><input id="search" placeholder="Search company, owner, reference..."
+              oninput="renderVisits()"><select id="statusFilter" onchange="renderVisits()">
+              <option value="">All Status</option>
+              <option>Closed</option>
+              <option>Hot Lead</option>
+              <option>Follow-up</option>
+              <option>Not Interested</option>
+              <option>Pending</option>
+            </select><input id="fromDate" type="date" onchange="renderVisits()"><input id="toDate" type="date"
+              onchange="renderVisits()"></div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Company</th>
+                  <th>Owner</th>
+                  <th>Reference</th>
+                  <th>Main Product</th>
+                  <th>Main ₹</th>
+                  <th>Additional</th>
+                  <th>Add ₹</th>
+                  <th>Gross Margin</th>
+                  <th>Ref. Commission</th>
+                  <th>Net Profit</th>
+                  <th>Status</th>
+                  <th>Follow-up</th>
+                  <th>Payment</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="visitRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="reports" class="page">
+        <div class="title">
+          <div>
+            <h2>Performance Report</h2>
+            <div class="sub">Professional summary for DORIC MULTIMEDIA PVT LTD.</div>
+          </div><button class="btn primary" onclick="openExport('reports')">Export</button>
+        </div>
+        <div class="cards">
+          <div class="card">
+            <div class="label">Main + Add-on Sales</div>
+            <div class="metric" id="rSales">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Travel Claim</div>
+            <div class="metric" id="rClaim">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Closed Deals</div>
+            <div class="metric" id="rClosed">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Open Pipeline</div>
+            <div class="metric" id="rOpen">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Gross Margin</div>
+            <div class="metric" id="rGrossMargin">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Reference Commission</div>
+            <div class="metric" id="rRefCommission">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Net Company Profit</div>
+            <div class="metric" id="rProfit">₹0</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h3>Status Summary</h3>
+            <div id="statusReport"></div>
+          </div>
+          <div class="panel">
+            <h3>Top Products</h3>
+            <div id="productReport"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Current Month Company Profit</h3>
+          <div class="sub" style="margin-bottom:10px">Net profit is calculated only on Closed sales: Selling Price −
+            Company Cost = Gross Margin; then Reference Commission is deducted from that Gross Margin (never from Sales
+            Value).</div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Units</th>
+                  <th>Sales</th>
+                  <th>Company Cost</th>
+                  <th>Gross Margin</th>
+                  <th>Reference Commission</th>
+                  <th>Net Profit</th>
+                  <th>Net Margin</th>
+                </tr>
+              </thead>
+              <tbody id="profitReport"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Current Month Task Work Report</h3>
+          <div class="sub" style="margin-bottom:10px">Date-wise work log for the current month. Completed tasks are
+            counted separately from pending work.</div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Total Tasks</th>
+                  <th>Completed</th>
+                  <th>Pending</th>
+                  <th>Work Done / Planned</th>
+                </tr>
+              </thead>
+              <tbody id="taskMonthReport"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Company-wise Sales Activity</h3>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Visits</th>
+                  <th>Closed</th>
+                  <th>Sales Value</th>
+                  <th>Last Visit</th>
+                  <th>Latest Status</th>
+                </tr>
+              </thead>
+              <tbody id="companyReport"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="travel" class="page">
+        <div class="title">
+          <div>
+            <h2>Travel Claims</h2>
+            <div class="sub">Claim-only travel register. It is completely separate from Customer Visits, Sales,
+              Follow-ups and Profit.</div>
+          </div>
+          <div class="actions"><button class="btn primary" onclick="openExport('travel')">Export Claim Report</button>
+          </div>
+        </div>
+
+        <form id="travelClaimForm" class="panel no-print">
+          <h3 id="travelFormTitle">Add Travel Claim</h3>
+          <div class="sub" style="margin-bottom:12px">Same company par baar-baar visit ho to sirf date, KM aur zaroori
+            travel details enter karein. Customer/visit details dobara enter karne ki zaroorat nahi hai.</div>
+          <div class="formgrid">
+            <div class="field"><label>Travel Date *</label><input id="tcDate" type="date" required></div>
+            <div class="field"><label>Company / Place *</label><input id="tcCompany" list="travelCompanies" required
+                placeholder="Select or type company / place"><datalist id="travelCompanies"></datalist></div>
+            <div class="field"><label>Travel From</label><input id="tcFrom"
+                placeholder="Office / Home / Previous location"></div>
+            <div class="field"><label>Travel To</label><input id="tcTo" placeholder="Customer / Market / City"></div>
+            <div class="field"><label>Travel Regarding / Purpose</label><input id="tcPurpose"
+                placeholder="Demo / Collection / Follow-up / Support / Meeting"></div>
+            <div class="field"><label>Travel KM *</label><input id="tcKm" type="number" min="0" step="0.1" required
+                placeholder="12.5" oninput="refreshTravelClaim()"></div>
+            <div class="field"><label>Claim Rate (₹/KM)</label><input id="tcRate" type="number" min="0" step="0.1"
+                value="3.5" oninput="refreshTravelClaim()"></div>
+            <div class="field"><label>Claim Amount (₹)</label><input id="tcAmount" type="number" readonly value="0">
+            </div>
+            <div class="field full"><label>Remarks</label><textarea id="tcRemarks" rows="2"
+                placeholder="Any travel note, toll/parking note, customer visit reference, etc."></textarea></div>
+          </div>
+          <div class="actions"><button type="button" class="btn light"
+              onclick="resetTravelClaim()">Clear</button><button class="btn primary" id="travelSaveBtn">Save Travel
+              Claim</button></div>
+        </form>
+
+        <div class="cards">
+          <div class="card">
+            <div class="label">Claim Entries</div>
+            <div class="metric" id="tVisits">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Total KM</div>
+            <div class="metric" id="tKm">0</div>
+          </div>
+          <div class="card">
+            <div class="label">Total Claim</div>
+            <div class="metric" id="tClaim">₹0</div>
+          </div>
+          <div class="card">
+            <div class="label">Average / Entry</div>
+            <div class="metric" id="tAvg">₹0</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="filters no-print">
+            <input id="travelSearch" placeholder="Search company / place / purpose / route..." oninput="renderTravel()">
+            <input id="travelFrom" type="date" onchange="renderTravel()">
+            <input id="travelTo" type="date" onchange="renderTravel()">
+          </div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Company / Place</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Purpose</th>
+                  <th>KM</th>
+                  <th>Rate</th>
+                  <th>Claim Amount</th>
+                  <th>Remarks</th>
+                  <th class="no-print">Action</th>
+                </tr>
+              </thead>
+              <tbody id="travelRows"></tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="6" style="text-align:right">TOTAL</th>
+                  <th id="travelTotalKm">0</th>
+                  <th></th>
+                  <th id="travelTotalClaim">₹0</th>
+                  <th></th>
+                  <th class="no-print"></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="tasks" class="page">
+        <div class="title">
+          <div>
+            <h2>Daily Task Manager</h2>
+            <div class="sub">Plan your day, track every task, and review exactly what you completed on each date.</div>
+          </div>
+          <div class="actions"><button class="btn light" onclick="openExport('tasks')">Export</button><button
+              class="btn primary" onclick="newTask()">＋ Add Task</button></div>
+        </div>
+        <div class="taskStats">
+          <div class="taskStat">
+            <div class="label">Today's Tasks</div>
+            <div class="big" id="taskToday">0</div>
+          </div>
+          <div class="taskStat">
+            <div class="label">Pending / In Progress</div>
+            <div class="big" id="taskPending">0</div>
+          </div>
+          <div class="taskStat">
+            <div class="label">Completed Today</div>
+            <div class="big" id="taskDoneToday">0</div>
+          </div>
+          <div class="taskStat">
+            <div class="label">Overdue</div>
+            <div class="big" id="taskOverdue">0</div>
+          </div>
+        </div>
+        <form id="taskForm" class="panel" onsubmit="saveTask(event)">
+          <div class="formgrid">
+            <div class="field"><label>Task Date *</label><input id="taskDate" type="date" required></div>
+            <div class="field"><label>Task / Work *</label><input id="taskTitle" required
+                placeholder="Call customer, prepare quotation, demo, collection..."></div>
+            <div class="field"><label>Company / Visited At</label><input id="taskCompany" placeholder="Company name">
+            </div>
+            <div class="field"><label>Owner / Contact Person</label><input id="taskOwner"
+                placeholder="Owner / decision maker"></div>
+            <div class="field"><label>Category</label><select id="taskCategory">
+                <option>Sales</option>
+                <option>Follow-up</option>
+                <option>Payment Collection</option>
+                <option>Customer Support</option>
+                <option>Demo / Training</option>
+                <option>Office Work</option>
+                <option>Travel</option>
+                <option>Report / Documentation</option>
+                <option>Other</option>
+              </select></div>
+            <div class="field"><label>Due Date</label><input id="taskDue" type="date"></div>
+            <div class="field"><label>Priority</label><select id="taskPriority">
+                <option>High</option>
+                <option selected>Medium</option>
+                <option>Low</option>
+              </select></div>
+            <div class="field"><label>Status</label><select id="taskStatus">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+              </select></div>
+            <div class="field full"><label>Notes / Result</label><textarea id="taskNotes" rows="3"
+                placeholder="What needs to be done, customer name, result, next action, etc."></textarea></div>
+          </div>
+          <div class="actions"><button type="button" class="btn light" onclick="resetTask()">Clear</button><button
+              class="btn primary" id="taskSaveBtn">Save Task</button></div>
+        </form>
+        <div class="panel">
+          <div class="title" style="margin-bottom:10px">
+            <div>
+              <h3 style="margin:0">Task History</h3>
+              <div class="sub">Filter by date/status and review your complete daily work record.</div>
+            </div>
+          </div>
+          <div class="filters"><input id="taskSearch" placeholder="Search task / notes / category..."
+              oninput="renderTasks()"><input id="taskFrom" type="date" onchange="renderTasks()"><input id="taskTo"
+              type="date" onchange="renderTasks()"><select id="taskStatusFilter" onchange="renderTasks()">
+              <option value="">All Status</option>
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select><select id="taskCategoryFilter" onchange="renderTasks()">
+              <option value="">All Categories</option>
+              <option>Sales</option>
+              <option>Follow-up</option>
+              <option>Payment Collection</option>
+              <option>Customer Support</option>
+              <option>Demo / Training</option>
+              <option>Office Work</option>
+              <option>Travel</option>
+              <option>Report / Documentation</option>
+              <option>Other</option>
+            </select></div>
+          <div id="taskHistory" class="taskBoard"></div>
+        </div>
+      </section>
+
+      <section id="reminders" class="page">
+        <div class="title">
+          <div>
+            <h2>Pending Reminders</h2>
+            <div class="sub">Follow-ups, pending payments and pending deals automatically collected from your visit
+              register.</div>
+          </div>
+          <div class="actions"><button class="btn light" onclick="requestReminderNotifications()">🔔 Enable
+              Notifications</button><button class="btn light" onclick="openExport('reminders')">Export</button><button
+              class="btn primary" onclick="renderReminders();checkReminderNotifications(true)">Refresh
+              Reminders</button></div>
+        </div>
+        <div class="reminderGrid">
+          <div class="reminderCard">
+            <div class="label">Due Today</div>
+            <div class="big" id="remToday">0</div>
+          </div>
+          <div class="reminderCard">
+            <div class="label">Overdue</div>
+            <div class="big" id="remOverdue">0</div>
+          </div>
+          <div class="reminderCard">
+            <div class="label">Pending Payments</div>
+            <div class="big" id="remPayment">0</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="title" style="margin-bottom:10px">
+            <div>
+              <h3 style="margin:0">Things Needing Follow-up</h3>
+              <div class="sub">Payment pending/partial, follow-up due, or deal marked pending.</div>
+            </div>
+          </div>
+          <div id="reminderList" class="reminderList"></div>
+        </div>
+      </section>
+
+      <section id="leads" class="page">
+        <div class="title">
+          <div>
+            <h2>Lead Calling Tracker</h2>
+            <div class="sub">Track every call, discussion, outcome and follow-up separately from customer visits.</div>
+          </div><button class="btn primary" onclick="openExport('leads')">Export</button>
+        </div>
+        <div class="leadCards">
+          <div class="leadCard">
+            <div class="label">Total Calls — This Month</div>
+            <div class="big" id="leadCalls">0</div>
+          </div>
+          <div class="leadCard">
+            <div class="label">Unique Leads</div>
+            <div class="big" id="leadUnique">0</div>
+          </div>
+          <div class="leadCard">
+            <div class="label">Qualified Leads</div>
+            <div class="big" id="leadQualified">0</div>
+          </div>
+          <div class="leadCard">
+            <div class="label">Qualification Rate</div>
+            <div class="big" id="leadRate">0%</div>
+          </div>
+          <div class="leadCard">
+            <div class="label">Follow-ups Due</div>
+            <div class="big" id="leadFollowDue">0</div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3 id="leadFormTitle">Add Lead Call</h3>
+          <form id="leadForm">
+            <div class="formgrid">
+              <div class="field"><label>Lead Name *</label><input id="leadName" required
+                  placeholder="Person / business name"></div>
+              <div class="field"><label>Mobile Number *</label><input id="leadMobile" required
+                  placeholder="10 digit mobile"></div>
+              <div class="field"><label>Call Date *</label><input id="leadDate" type="date" required></div>
+              <div class="field"><label>Call Purpose</label><input id="leadPurpose"
+                  placeholder="New enquiry / follow-up / demo / renewal"></div>
+              <div class="field"><label>Lead Source</label><select id="leadSource">
+                  <option>Phone</option>
+                  <option>WhatsApp</option>
+                  <option>Website</option>
+                  <option>Reference</option>
+                  <option>Existing Customer</option>
+                  <option>Walk-in</option>
+                  <option>Other</option>
+                </select></div>
+              <div class="field"><label>Status / Outcome</label><select id="leadStatus">
+                  <option>New</option>
+                  <option>Called</option>
+                  <option>Interested</option>
+                  <option>Qualified</option>
+                  <option>Follow-up</option>
+                  <option>Not Interested</option>
+                  <option>Converted</option>
+                </select></div>
+              <div class="field"><label>Next Follow-up Date</label><input id="leadFollow" type="date"></div>
+              <div class="field"><label>Next Action</label><input id="leadNext"
+                  placeholder="Call again / Demo / Send quotation"></div>
+              <div class="field full"><label>Discussion / What Happened?</label><textarea id="leadDiscussion" rows="3"
+                  placeholder="What did the lead say? Requirement, objection, product interest, budget, etc."></textarea>
+              </div>
+              <div class="field full"><label>Remarks</label><textarea id="leadRemarks" rows="2"
+                  placeholder="Important notes / commitment / next step"></textarea></div>
+            </div>
+            <div class="actions"><button type="button" class="btn light" onclick="resetLead()">Clear</button><button
+                id="leadSaveBtn" class="btn primary">Save Lead Call</button></div>
+          </form>
+        </div>
+        <div class="panel">
+          <div class="title">
+            <div>
+              <h3>Lead Call History</h3>
+              <div class="sub">One row = one call attempt, so you can see exactly how many calls were made and what
+                happened.</div>
+            </div>
+          </div>
+          <div class="filters"><input id="leadSearch" placeholder="Search lead name / mobile / discussion..."
+              oninput="renderLeads()"><input id="leadFrom" type="date" onchange="renderLeads()"><input id="leadTo"
+              type="date" onchange="renderLeads()"><select id="leadStatusFilter" onchange="renderLeads()">
+              <option value="">All Outcomes</option>
+              <option>New</option>
+              <option>Called</option>
+              <option>Interested</option>
+              <option>Qualified</option>
+              <option>Follow-up</option>
+              <option>Not Interested</option>
+              <option>Converted</option>
+            </select><select id="leadMonth" onchange="renderLeads()">
+              <option value="">All Months</option>
+            </select></div>
+          <div id="leadHistory"></div>
+        </div>
+        <div class="panel">
+          <h3>Month-wise Qualification Summary</h3>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Total Calls</th>
+                  <th>Unique Leads</th>
+                  <th>Qualified</th>
+                  <th>Converted</th>
+                  <th>Qualification %</th>
+                  <th>Not Interested</th>
+                  <th>Follow-ups</th>
+                </tr>
+              </thead>
+              <tbody id="leadMonthReport"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="title">
+          <div>
+            <h2>Settings</h2>
+            <div class="sub">Customize products and your company information.</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <h3>Company Profile</h3>
+            <div class="field"><label>Company Name</label><input id="companyName" value="DORIC MULTIMEDIA PVT LTD">
+            </div>
+            <div class="field" style="margin-top:12px"><label>Tagline</label><input id="companyTag"
+                value="TALLY 5 STAR PARTNER"></div>
+            <div class="actions"><button class="btn primary" onclick="saveSettings()">Save Settings</button></div>
+          </div>
+          <div class="panel">
+            <h3>Product Master</h3>
+            <div class="field"><label>Products (one per line)</label><textarea id="products" rows="12"></textarea></div>
+            <div class="actions"><button class="btn primary" onclick="saveProducts()">Save Products</button></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Product Price & Profit Master</h3>
+          <div class="sub" style="margin-bottom:10px">Set selling price, company cost and optional default reference
+            commission %. The commission is deducted from the company's gross margin, not from the selling price.</div>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Selling Price ₹</th>
+                  <th>Company Cost ₹</th>
+                  <th>Gross Margin ₹</th>
+                  <th>Margin</th>
+                  <th>Default Ref. Commission %</th>
+                </tr>
+              </thead>
+              <tbody id="priceMasterRows"></tbody>
+            </table>
+          </div>
+          <div class="actions"><button class="btn primary" onclick="savePriceMaster()">Save Price Master</button></div>
+        </div>
+        <div class="panel">
+          <h3>Login & Security</h3>
+          <p class="sub">Change the ID/password used to open DoricTrack Pro on this browser.</p>
+          <div class="formgrid">
+            <div class="field"><label>New DoricTrack ID</label><input id="newAuthUser" placeholder="New ID"></div>
+            <div class="field"><label>New Password</label><input id="newAuthPass" type="password"
+                placeholder="New password"></div>
+            <div class="field"><label>Confirm Password</label><input id="newAuthConfirm" type="password"
+                placeholder="Confirm password"></div>
+          </div>
+          <div class="actions"><button class="btn primary" onclick="changeCredentials()">Change Login</button></div>
+        </div>
+        <div class="panel">
+          <h3>Data Backup / Restore</h3>
+          <p class="sub">Backup saves all visits and settings into a JSON file. Restore it later on another
+            device/browser.</p><input type="file" id="restoreFile" accept=".json" onchange="restoreData(event)">
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const KEY = 'dorictrack_visits_v1', SET = 'dorictrack_settings_v1', PROD = 'dorictrack_products_v1', REM = 'dorictrack_reminders_v1', PRICE = 'dorictrack_price_master_v1', TASK = 'dorictrack_tasks_v1', LEAD = 'dorictrack_leads_v1', TRAVEL = 'dorictrack_travel_claims_v1';
+    const defaultProducts = ['New Tally + Server', 'TSS', 'AWS (Cloud)', 'Customisation', 'WABA', 'Biz Analyst 1 Year', 'Biz Analyst 2 Year + 1 Year Free', 'Biz Analyst 3 Year + 2 Year Free', 'Biz Analyst 5 Year', 'TallyPrime Server', 'Tally Prime Silver', 'Tally Prime Gold', 'TSS Silver 1 Year', 'TSS Silver 2 Year', 'TSS Gold 1 Year', 'TSS Gold 2 Year', 'TSS Silver', 'TSS Gold', 'Auditor', 'Other'];
+    // Selling prices and company margins supplied by the user. Cost is derived from the stated margin so the dashboard reports company profit correctly.
+    const defaultPriceMaster = {
+      'Tally Prime Silver': { sell: 22500, cost: 14625, margin: 35 },
+      'Tally Prime Gold': { sell: 67500, cost: 43875, margin: 35 },
+      'TSS Silver 1 Year': { sell: 4500, cost: 3600, margin: 20 },
+      'TSS Silver 2 Year': { sell: 8100, cost: 6480, margin: 20 },
+      'TSS Gold 1 Year': { sell: 13500, cost: 10800, margin: 20 },
+      'TSS Gold 2 Year': { sell: 24300, cost: 19440, margin: 20 },
+      'TSS Silver': { sell: 4500, cost: 3600, margin: 20 },
+      'TSS Gold': { sell: 13500, cost: 10800, margin: 20 },
+      'Auditor': { sell: 12150, cost: null },
+      'AWS (Cloud)': { sell: 6540 / 0.77, cost: 6540, margin: 23, costIncludesTax: true },
+      'TallyPrime Server': { sell: 270000, cost: 162000, margin: 40 },
+      'Biz Analyst 1 Year': { sell: 3300, cost: 1650, margin: 50 },
+      'Biz Analyst 2 Year + 1 Year Free': { sell: 6600, cost: 3300, margin: 50 },
+      'Biz Analyst 3 Year + 2 Year Free': { sell: 9900, cost: 4950, margin: 50 },
+      'Biz Analyst 2 Year': { sell: 6600, cost: 3300, margin: 50 },
+      'Biz Analyst 5 Year': { sell: 9900, cost: 4950, margin: 50 }
+    };
+    let visits = JSON.parse(localStorage.getItem(KEY) || '[]');
+    let tasks = JSON.parse(localStorage.getItem(TASK) || '[]');
+    let leads = JSON.parse(localStorage.getItem(LEAD) || '[]');
+    let travelClaims = JSON.parse(localStorage.getItem(TRAVEL) || 'null');
+    if (!Array.isArray(travelClaims)) travelClaims = null;
+    let editingTravelClaimId = null;
+    let settings = JSON.parse(localStorage.getItem(SET) || '{"company":"DORIC MULTIMEDIA PVT LTD","tag":"TALLY 5 STAR PARTNER"}');
+    let savedProducts = JSON.parse(localStorage.getItem(PROD) || 'null'); let products = [...new Set([...(savedProducts || []), ...defaultProducts])];
+    let priceMaster = JSON.parse(localStorage.getItem(PRICE) || JSON.stringify(defaultPriceMaster));
+    const PRICE_RULES_VERSION = '2026-10-05-v2';
+    if (localStorage.getItem(PRICE + '_version') !== PRICE_RULES_VERSION) { priceMaster = { ...priceMaster, ...defaultPriceMaster }; localStorage.setItem(PRICE, JSON.stringify(priceMaster)); localStorage.setItem(PRICE + '_version', PRICE_RULES_VERSION) }
+    Object.keys(defaultPriceMaster).forEach(k => { if (!priceMaster[k]) priceMaster[k] = { ...defaultPriceMaster[k] }; if (priceMaster[k].refPct === undefined) priceMaster[k].refPct = 0 });
+    const $ = id => document.getElementById(id);
+    const AUTH_USER = 'dorictrack_auth_user_v1', AUTH_HASH = 'dorictrack_auth_hash_v1', AUTH_SESSION = 'dorictrack_auth_session_v1';
+    let authMode = 'signin';
+    function authHash(value) { let h = 2166136261; for (let i = 0; i < value.length; i++) { h ^= value.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0).toString(16).padStart(8, '0'); }
+    function hasCredentials() { return !!localStorage.getItem(AUTH_USER) && !!localStorage.getItem(AUTH_HASH) }
+    function setAuthMode(mode) { authMode = mode; const first = !hasCredentials(); $('authTitle').textContent = first ? 'Create Login' : (mode === 'signin' ? 'Sign In' : 'Create Login'); $('authSubtitle').textContent = first ? 'Create the ID and password you will use whenever DoricTrack Pro opens.' : 'Enter your DoricTrack ID and password to continue.'; $('authBtn').textContent = first ? 'Create Login' : (mode === 'signin' ? 'Sign In' : 'Create Login'); $('authConfirmWrap').style.display = (first || mode === 'create') ? 'block' : 'none'; $('authHint').textContent = first ? 'Choose an ID and password. This browser will require them after the app is closed.' : 'Your login is stored only in this browser. Closing the app signs you out automatically; your CRM data is not deleted.'; $('authError').style.display = 'none' }
+    function submitAuth() { const user = $('authUser').value.trim(), pass = $('authPass').value, confirmPass = $('authConfirm').value, first = !hasCredentials(); if (!user || !pass) { showAuthError('Please enter both ID and password.'); return } if (first || authMode === 'create') { if (pass.length < 4) { showAuthError('Password must be at least 4 characters.'); return } if (pass !== confirmPass) { showAuthError('Passwords do not match.'); return } localStorage.setItem(AUTH_USER, user); localStorage.setItem(AUTH_HASH, authHash(pass)); sessionStorage.setItem(AUTH_SESSION, '1'); unlockApp(user); toast('Login created successfully'); return } const savedUser = localStorage.getItem(AUTH_USER), savedHash = localStorage.getItem(AUTH_HASH); if (user !== savedUser || authHash(pass) !== savedHash) { showAuthError('Incorrect ID or password.'); return } sessionStorage.setItem(AUTH_SESSION, '1'); unlockApp(user) }
+    function showAuthError(msg) { $('authError').textContent = msg; $('authError').style.display = 'block' }
+    function unlockApp(user) { $('authOverlay').style.display = 'none'; $('sessionUser').textContent = 'Signed in: ' + user; renderDashboard(); renderTasks(); renderReminders(); setTimeout(() => checkReminderNotifications(false), 800) }
+    function lockApp() { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $('dashboard').classList.add('active'); $('authOverlay').style.display = 'flex'; $('authUser').value = ''; $('authPass').value = ''; $('authConfirm').value = ''; setAuthMode('signin') }
+    function signOut() { if (confirm('Sign out of DoricTrack Pro? Your saved CRM data will remain safe.')) { sessionStorage.removeItem(AUTH_SESSION); lockApp() } }
+    function changeCredentials() { const u = $('newAuthUser').value.trim(), p = $('newAuthPass').value, c = $('newAuthConfirm').value; if (!u || !p) { toast('Enter a new ID and password'); return } if (p.length < 4) { toast('Password must be at least 4 characters'); return } if (p !== c) { toast('Passwords do not match'); return } localStorage.setItem(AUTH_USER, u); localStorage.setItem(AUTH_HASH, authHash(p)); sessionStorage.setItem(AUTH_SESSION, '1'); $('newAuthUser').value = ''; $('newAuthPass').value = ''; $('newAuthConfirm').value = ''; $('sessionUser').textContent = 'Signed in: ' + u; toast('Login changed successfully') }
+    function initAuth() { if (!hasCredentials()) { setAuthMode('create'); $('authOverlay').style.display = 'flex' } else if (sessionStorage.getItem(AUTH_SESSION) === '1') { unlockApp(localStorage.getItem(AUTH_USER) || 'User') } else { setAuthMode('signin'); $('authOverlay').style.display = 'flex' } }
+
+    function money(n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) }
+    function productPrice(name) { return priceMaster[name] || { sell: 0, cost: null, refPct: 0 } }
+    function knownCost(name, recordCost) { const c = productPrice(name).cost; if (c !== null && c !== undefined && c !== '') return Number(c); if (recordCost !== undefined && recordCost !== null && recordCost !== '') return Number(recordCost); return null }
+    function currentMonthKey() { return today().slice(0, 7) }
+    function closedMonthVisits() { const m = currentMonthKey(); return visits.filter(v => v.status === 'Closed' && String(v.date || '').slice(0, 7) === m) }
+    function visitGrossMargin(v) { const c = knownCost(v.product, v.cost), a = knownCost(v.additional, v.addCost), main = Number(v.price || 0), add = Number(v.addPrice || 0); if ((main && c === null) || (add && v.additional && a === null)) return null; return (main - (c || 0)) + (add - (a || 0)) }
+    // Reference commission is ALWAYS deducted from the company's gross margin.
+    // It is never deducted from the selling price.  If both % and ₹ are present,
+    // the explicitly entered ₹ amount is used; otherwise % of gross margin is used.
+    function visitReferenceCommission(v, gross) {
+      if (gross === null) return null;
+      const gm = Math.max(Number(gross) || 0, 0);
+      const rupee = Number(v.refComm);
+      if (Number.isFinite(rupee) && rupee > 0) return Math.min(Math.max(rupee, 0), gm);
+      const pct = Number(v.refPct);
+      if (Number.isFinite(pct) && pct > 0) return Math.min(gm * pct / 100, gm);
+      return 0;
+    }
+    function visitNetProfit(v) {
+      const gross = visitGrossMargin(v);
+      if (gross === null) return null;
+      const commission = visitReferenceCommission(v, gross);
+      return Math.max(0, gross - commission);
+    }
+    function profitForVisit(v) { const gross = visitGrossMargin(v); if (gross === null) return null; const commission = visitReferenceCommission(v, gross); return { grossMargin: gross, referenceCommission: commission, netProfit: gross - commission } }
+    function profitSummary() { const rows = closedMonthVisits(); let sales = 0, cost = 0, knownSales = 0, missingCostSales = 0, grossMargin = 0, referenceCommission = 0, netProfit = 0; rows.forEach(v => { const mainSale = Number(v.price || 0), addSale = Number(v.addPrice || 0), totalSale = mainSale + addSale; sales += totalSale; const p = profitForVisit(v); if (p === null) { missingCostSales += totalSale; return } const c = knownCost(v.product, v.cost), a = knownCost(v.additional, v.addCost); knownSales += totalSale; if (mainSale) cost += Number(c || 0); if (addSale) cost += Number(a || 0); grossMargin += p.grossMargin; referenceCommission += p.referenceCommission; netProfit += p.netProfit }); return { rows, sales, cost, knownSales, grossMargin, referenceCommission, netProfit, profit: netProfit, margin: knownSales ? ((netProfit) / knownSales * 100) : 0, missingCostSales } }
+    function today() { return new Date().toISOString().slice(0, 10) }
+    function toast(s) { $('toast').textContent = s; $('toast').style.display = 'block'; setTimeout(() => $('toast').style.display = 'none', 2200) }
+    function fillProducts() { let opts = '<option value="">Select product</option>' + products.map(p => `<option>${esc(p)}</option>`).join(''); $('vProduct').innerHTML = opts; $('vAdditional').innerHTML = '<option value="">None</option>' + products.map(p => `<option>${esc(p)}</option>`).join('') }
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) }
+    function showPage(id) {
+      const current = document.querySelector('.page.active')?.id;
+      if (current === 'visit' && id !== 'visit') { resetVisit(); }
+      if (current === 'tasks' && id !== 'tasks') { resetTask(); }
+      if (current === 'leads' && id !== 'leads') { resetLead(); }
+      if (current === 'travel' && id !== 'travel') { resetTravelClaim(); }
+      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+      $(id).classList.add('active');
+      document.querySelectorAll('.navbtn').forEach(x => x.classList.toggle('active', x.dataset.page === id));
+      if (id === 'dashboard') renderDashboard(); if (id === 'visits') renderVisits(); if (id === 'reports') renderReports(); if (id === 'travel') renderTravel(); if (id === 'reminders') { renderReminders(); checkReminderNotifications(true) } if (id === 'tasks') renderTasks(); if (id === 'leads') renderLeads(); if (id === 'settings') { loadSettings(); renderPriceMaster() }
+    }
+    let commissionInputMode = 'pct';
+    function visitGrossFromInputs() { const product = $('vProduct').value, additional = $('vAdditional').value, main = Number($('vPrice').value || 0), add = Number($('vAddPrice').value || 0), c = knownCost(product), a = knownCost(additional); if ((main && c === null) || (add && additional && a === null)) return null; return (main - (c || 0)) + (add - (a || 0)) }
+    function refreshVisitProfit(mode) {
+      const gross = visitGrossFromInputs();
+      if (gross === null) { $('vGrossMargin').value = ''; $('vNetProfit').value = ''; return }
+      const gm = Math.max(Number(gross) || 0, 0);
+      let comm = 0;
+      if (mode === 'rupee') {
+        comm = Math.min(Math.max(Number($('vRefComm').value || 0), 0), gm);
+        $('vRefPct').value = gm ? ((comm / gm) * 100).toFixed(2) : '0';
+      } else {
+        const pct = Math.max(Number($('vRefPct').value || 0), 0);
+        comm = Math.min(gm * pct / 100, gm);
+        $('vRefComm').value = comm.toFixed(2);
+      }
+      // IMPORTANT: company profit = company gross margin - reference commission.
+      $('vGrossMargin').value = gm.toFixed(2);
+      $('vNetProfit').value = Math.max(0, gm - comm).toFixed(2);
+    }
+    function applyProductPrice(fieldId, priceId) { const name = $(fieldId).value; const p = productPrice(name); if (name && p.sell) $(priceId).value = p.sell; if (fieldId === 'vProduct' && name) { const pct = Number(p.refPct || 0); $('vRefPct').value = pct; commissionInputMode = 'pct' } refreshVisitProfit(commissionInputMode) }
+    function renderPriceMaster() { const names = [...new Set([...products, ...Object.keys(priceMaster)])]; $('priceMasterRows').innerHTML = names.map((n, i) => { const p = priceMaster[n] || { sell: 0, cost: null, refPct: 0 }; const margin = p.sell && p.cost !== null ? ((p.sell - p.cost) / p.sell * 100) : 0; return `<tr><td><b>${esc(n)}</b></td><td><input id="sell_${i}" data-product="${esc(n)}" type="number" min="0" value="${p.sell || 0}"></td><td><input id="cost_${i}" data-product="${esc(n)}" type="number" min="0" value="${p.cost === null || p.cost === undefined ? '' : p.cost}"></td><td>${money((p.sell || 0) - (p.cost || 0))}</td><td>${p.cost === null || p.cost === undefined ? '—' : margin.toFixed(1) + '%'}</td><td><input id="refpct_${i}" data-product="${esc(n)}" type="number" min="0" step="0.01" value="${Number(p.refPct || 0)}"></td></tr>` }).join('') }
+    function savePriceMaster() { document.querySelectorAll('#priceMasterRows input[id^=sell_]').forEach(el => { const i = el.id.slice(5), n = el.dataset.product, c = document.getElementById('cost_' + i), rp = document.getElementById('refpct_' + i); priceMaster[n] = { sell: Number(el.value) || 0, cost: c.value === '' ? null : Number(c.value), refPct: rp ? Math.max(Number(rp.value) || 0, 0) : Number(priceMaster[n]?.refPct || 0) } }); localStorage.setItem(PRICE, JSON.stringify(priceMaster)); localStorage.setItem(PRICE + '_version', PRICE_RULES_VERSION); toast('Price, margin & reference commission master saved'); renderDashboard(); renderReports() }
+    function resetVisit() { editingId = null; commissionInputMode = 'pct'; $('visitForm').reset(); $('vDate').value = today(); $('vRefPct').value = 0; $('vRefComm').value = 0; $('vGrossMargin').value = 0; $('vNetProfit').value = 0; document.querySelector('#visit h2').textContent = 'New Customer Visit'; document.querySelector('#visit .sub').textContent = 'Capture every detail once and keep your sales history organized.'; document.querySelector('#visitForm .primary').textContent = 'Save Visit' }
+    function saveVisit(e) {
+      e.preventDefault();
+      try {
+        const product = $('vProduct').value, additional = $('vAdditional').value;
+        const company = $('vCompany').value.trim(), date = $('vDate').value;
+        if (!date || !company) { toast('Please enter Visit Date and Company Name'); return }
+        refreshVisitProfit(commissionInputMode);
+        const mainMaster = productPrice(product), addMaster = productPrice(additional);
+        const x = { id: editingId || Date.now(), date, company, owner: $('vOwner').value.trim(), ref: $('vRef').value.trim(), refPct: Math.max(Number($('vRefPct').value) || 0, 0), refComm: Math.max(Number($('vRefComm').value) || 0, 0), phone: $('vPhone').value.trim(), industry: $('vIndustry').value.trim(), purpose: $('vPurpose').value.trim(), product, price: Number($('vPrice').value) || 0, cost: mainMaster.cost === null || mainMaster.cost === undefined ? null : Number(mainMaster.cost), status: $('vStatus').value, additional, addPrice: Number($('vAddPrice').value) || 0, addCost: !additional ? null : (addMaster.cost === null || addMaster.cost === undefined ? null : Number(addMaster.cost)), follow: $('vFollow').value, payment: $('vPayment').value, km: editingId ? (Number(visits.find(v => v.id === editingId)?.km || 0)) : 0, rate: editingId ? (Number(visits.find(v => v.id === editingId)?.rate || 3.5)) : 3.5, discussion: $('vDiscussion').value.trim(), remarks: $('vRemarks').value.trim() };
+        if (editingId) { const i = visits.findIndex(v => v.id === editingId); if (i < 0) { toast('Saved visit could not be found'); return } visits[i] = x; toast('Visit updated successfully') } else { visits.unshift(x); toast('Visit saved successfully') }
+        localStorage.setItem(KEY, JSON.stringify(visits)); const rs = reminderStore(); Object.keys(rs).filter(k => k.endsWith(':' + x.id)).forEach(k => delete rs[k]); saveReminderStore(rs); editingId = null; resetVisit(); showPage('dashboard');
+      } catch (err) { console.error(err); toast('Visit could not be saved. Please try again.') }
+    }
+
+    function closedSalesValue(list = visits) { return list.filter(v => v.status === 'Closed').reduce((a, v) => a + Number(v.price || 0) + Number(v.addPrice || 0), 0) }
+    function renderDashboard() {
+      let total = visits.length, closed = visits.filter(v => v.status === 'Closed').length, sales = closedSalesValue(), ps = profitSummary(); $('mVisits').textContent = total; $('mClosed').textContent = closed; $('mConv').textContent = total ? Math.round(closed / total * 100) + '%' : '0%'; $('mSales').textContent = money(sales); $('mGrossMargin').textContent = money(ps.grossMargin); $('mRefCommission').textContent = money(ps.referenceCommission); $('mProfit').textContent = money(ps.netProfit);
+      let tc = Array.isArray(travelClaims) ? travelClaims : [], totalKm = tc.reduce((a, v) => a + Number(v.km || 0), 0), totalClaim = tc.reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0), month = currentMonthKey(), monthClaim = tc.filter(v => String(v.date || '').slice(0, 7) === month).reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0); $('mTravelEntries').textContent = tc.length; $('mTravelKm').textContent = totalKm.toLocaleString('en-IN', { maximumFractionDigits: 1 }); $('mTravelClaim').textContent = money(totalClaim); $('mTravelMonthClaim').textContent = money(monthClaim);
+      let recent = visits.slice(0, 7); $('recent').innerHTML = recent.length ? recent.map(v => `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(v.company)}</b><br><span class="label">${v.date} • ${esc(v.product || 'No product')} • ${money(v.price + v.addPrice)}</span></div>`).join('') : '<div class="empty">No visits yet.</div>';
+      let statuses = ['Closed', 'Hot Lead', 'Follow-up', 'Pending', 'Not Interested']; $('pipeline').innerHTML = statuses.map(s => { let n = visits.filter(v => v.status === s).length; let pct = total ? Math.round(n / total * 100) : 0; return `<div style="margin:12px 0"><div style="display:flex;justify-content:space-between"><b>${s}</b><span>${n}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>` }).join('');
+      let map = {}; visits.forEach(v => { let p = v.product || 'Unspecified'; map[p] = (map[p] || 0) + 1 }); let arr = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 8); $('productsDash').innerHTML = arr.length ? arr.map(([p, n]) => `<div style="display:grid;grid-template-columns:190px 1fr 45px;gap:10px;align-items:center;margin:10px 0"><span>${esc(p)}</span><div class="bar"><i style="width:${total ? Math.round(n / total * 100) : 0}%"></i></div><b>${n}</b></div>`).join('') : '<div class="empty">No product data yet.</div>';
+      let recentClaims = [...tc].sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 5); $('dashboardTravelClaims').innerHTML = recentClaims.length ? `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Company / Place</th><th>Purpose</th><th>KM</th><th>Claim</th></tr></thead><tbody>${recentClaims.map(v => `<tr><td>${esc(v.date || '—')}</td><td><b>${esc(v.company || '—')}</b></td><td>${esc(v.purpose || '—')}</td><td>${Number(v.km || 0).toLocaleString('en-IN', { maximumFractionDigits: 1 })}</td><td><b>${money(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0)))}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty" style="padding:12px 0">No travel claims recorded yet. Add your first claim from Travel Claims.</div>'
+    }
+    function today() { return new Date().toISOString().slice(0, 10) }
+    function toast(s) { $('toast').textContent = s; $('toast').style.display = 'block'; setTimeout(() => $('toast').style.display = 'none', 2200) }
+    function fillProducts() { let opts = '<option value="">Select product</option>' + products.map(p => `<option>${esc(p)}</option>`).join(''); $('vProduct').innerHTML = opts; $('vAdditional').innerHTML = '<option value="">None</option>' + products.map(p => `<option>${esc(p)}</option>`).join('') }
+    function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) }
+    function showPage(id) {
+      const current = document.querySelector('.page.active')?.id;
+      if (current === 'visit' && id !== 'visit') { resetVisit(); }
+      if (current === 'tasks' && id !== 'tasks') { resetTask(); }
+      if (current === 'leads' && id !== 'leads') { resetLead(); }
+      if (current === 'travel' && id !== 'travel') { resetTravelClaim(); }
+      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+      $(id).classList.add('active');
+      document.querySelectorAll('.navbtn').forEach(x => x.classList.toggle('active', x.dataset.page === id));
+      if (id === 'dashboard') renderDashboard(); if (id === 'visits') renderVisits(); if (id === 'reports') renderReports(); if (id === 'travel') renderTravel(); if (id === 'reminders') { renderReminders(); checkReminderNotifications(true) } if (id === 'tasks') renderTasks(); if (id === 'leads') renderLeads(); if (id === 'settings') { loadSettings(); renderPriceMaster() }
+    }
+    function applyProductPrice(fieldId, priceId) { const name = $(fieldId).value; const p = productPrice(name); if (name && p.sell) $(priceId).value = p.sell; if (fieldId === 'vProduct' && name) { const pct = Number(p.refPct || 0); $('vRefPct').value = pct; commissionInputMode = 'pct' } refreshVisitProfit(commissionInputMode) }
+    function renderPriceMaster() { const names = [...new Set([...products, ...Object.keys(priceMaster)])]; $('priceMasterRows').innerHTML = names.map((n, i) => { const p = priceMaster[n] || { sell: 0, cost: null, refPct: 0 }; const margin = p.sell && p.cost !== null ? ((p.sell - p.cost) / p.sell * 100) : 0; return `<tr><td><b>${esc(n)}</b></td><td><input id="sell_${i}" data-product="${esc(n)}" type="number" min="0" value="${p.sell || 0}"></td><td><input id="cost_${i}" data-product="${esc(n)}" type="number" min="0" value="${p.cost === null || p.cost === undefined ? '' : p.cost}"></td><td>${money((p.sell || 0) - (p.cost || 0))}</td><td>${p.cost === null || p.cost === undefined ? '—' : margin.toFixed(1) + '%'}</td><td><input id="refpct_${i}" data-product="${esc(n)}" type="number" min="0" step="0.01" value="${Number(p.refPct || 0)}"></td></tr>` }).join('') }
+    function savePriceMaster() { document.querySelectorAll('#priceMasterRows input[id^=sell_]').forEach(el => { const i = el.id.slice(5), n = el.dataset.product, c = document.getElementById('cost_' + i), rp = document.getElementById('refpct_' + i); priceMaster[n] = { sell: Number(el.value) || 0, cost: c.value === '' ? null : Number(c.value), refPct: rp ? Math.max(Number(rp.value) || 0, 0) : Number(priceMaster[n]?.refPct || 0) } }); localStorage.setItem(PRICE, JSON.stringify(priceMaster)); localStorage.setItem(PRICE + '_version', PRICE_RULES_VERSION); toast('Price, margin & reference commission master saved'); renderDashboard(); renderReports() }
+    function resetVisit() { editingId = null; commissionInputMode = 'pct'; $('visitForm').reset(); $('vDate').value = today(); $('vRefPct').value = 0; $('vRefComm').value = 0; $('vGrossMargin').value = 0; $('vNetProfit').value = 0; document.querySelector('#visit h2').textContent = 'New Customer Visit'; document.querySelector('#visit .sub').textContent = 'Capture every detail once and keep your sales history organized.'; document.querySelector('#visitForm .primary').textContent = 'Save Visit' }
+    function saveVisit(e) {
+      e.preventDefault();
+      try {
+        const product = $('vProduct').value, additional = $('vAdditional').value;
+        const company = $('vCompany').value.trim(), date = $('vDate').value;
+        if (!date || !company) { toast('Please enter Visit Date and Company Name'); return }
+        refreshVisitProfit(commissionInputMode);
+        const mainMaster = productPrice(product), addMaster = productPrice(additional);
+        const x = { id: editingId || Date.now(), date, company, owner: $('vOwner').value.trim(), ref: $('vRef').value.trim(), refPct: Math.max(Number($('vRefPct').value) || 0, 0), refComm: Math.max(Number($('vRefComm').value) || 0, 0), phone: $('vPhone').value.trim(), industry: $('vIndustry').value.trim(), purpose: $('vPurpose').value.trim(), product, price: Number($('vPrice').value) || 0, cost: mainMaster.cost === null || mainMaster.cost === undefined ? null : Number(mainMaster.cost), status: $('vStatus').value, additional, addPrice: Number($('vAddPrice').value) || 0, addCost: !additional ? null : (addMaster.cost === null || addMaster.cost === undefined ? null : Number(addMaster.cost)), follow: $('vFollow').value, payment: $('vPayment').value, km: editingId ? (Number(visits.find(v => v.id === editingId)?.km || 0)) : 0, rate: editingId ? (Number(visits.find(v => v.id === editingId)?.rate || 3.5)) : 3.5, discussion: $('vDiscussion').value.trim(), remarks: $('vRemarks').value.trim() };
+        if (editingId) { const i = visits.findIndex(v => v.id === editingId); if (i < 0) { toast('Saved visit could not be found'); return } visits[i] = x; toast('Visit updated successfully') } else { visits.unshift(x); toast('Visit saved successfully') }
+        localStorage.setItem(KEY, JSON.stringify(visits)); const rs = reminderStore(); Object.keys(rs).filter(k => k.endsWith(':' + x.id)).forEach(k => delete rs[k]); saveReminderStore(rs); editingId = null; resetVisit(); showPage('dashboard');
+      } catch (err) { console.error(err); toast('Visit could not be saved. Please try again.') }
+    }
+
+    function closedSalesValue(list = visits) { return list.filter(v => v.status === 'Closed').reduce((a, v) => a + Number(v.price || 0) + Number(v.addPrice || 0), 0) }
+    function renderDashboard() {
+      let total = visits.length, closed = visits.filter(v => v.status === 'Closed').length, sales = closedSalesValue(), ps = profitSummary(); $('mVisits').textContent = total; $('mClosed').textContent = closed; $('mConv').textContent = total ? Math.round(closed / total * 100) + '%' : '0%'; $('mSales').textContent = money(sales); $('mGrossMargin').textContent = money(ps.grossMargin); $('mRefCommission').textContent = money(ps.referenceCommission); $('mProfit').textContent = money(ps.netProfit);
+      let tc = Array.isArray(travelClaims) ? travelClaims : [], totalKm = tc.reduce((a, v) => a + Number(v.km || 0), 0), totalClaim = tc.reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0), month = currentMonthKey(), monthClaim = tc.filter(v => String(v.date || '').slice(0, 7) === month).reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0); $('mTravelEntries').textContent = tc.length; $('mTravelKm').textContent = totalKm.toLocaleString('en-IN', { maximumFractionDigits: 1 }); $('mTravelClaim').textContent = money(totalClaim); $('mTravelMonthClaim').textContent = money(monthClaim);
+      let recent = visits.slice(0, 7); $('recent').innerHTML = recent.length ? recent.map(v => `<div style="padding:9px 0;border-bottom:1px solid var(--line)"><b>${esc(v.company)}</b><br><span class="label">${v.date} • ${esc(v.product || 'No product')} • ${money(v.price + v.addPrice)}</span></div>`).join('') : '<div class="empty">No visits yet.</div>';
+      let statuses = ['Closed', 'Hot Lead', 'Follow-up', 'Pending', 'Not Interested']; $('pipeline').innerHTML = statuses.map(s => { let n = visits.filter(v => v.status === s).length; let pct = total ? Math.round(n / total * 100) : 0; return `<div style="margin:12px 0"><div style="display:flex;justify-content:space-between"><b>${s}</b><span>${n}</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>` }).join('');
+      let map = {}; visits.forEach(v => { let p = v.product || 'Unspecified'; map[p] = (map[p] || 0) + 1 }); let arr = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 8); $('productsDash').innerHTML = arr.length ? arr.map(([p, n]) => `<div style="display:grid;grid-template-columns:190px 1fr 45px;gap:10px;align-items:center;margin:10px 0"><span>${esc(p)}</span><div class="bar"><i style="width:${total ? Math.round(n / total * 100) : 0}%"></i></div><b>${n}</b></div>`).join('') : '<div class="empty">No product data yet.</div>';
+      let recentClaims = [...tc].sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))).slice(0, 5); $('dashboardTravelClaims').innerHTML = recentClaims.length ? `<div class="tablewrap"><table><thead><tr><th>Date</th><th>Company / Place</th><th>Purpose</th><th>KM</th><th>Claim</th></tr></thead><tbody>${recentClaims.map(v => `<tr><td>${esc(v.date || '—')}</td><td><b>${esc(v.company || '—')}</b></td><td>${esc(v.purpose || '—')}</td><td>${Number(v.km || 0).toLocaleString('en-IN', { maximumFractionDigits: 1 })}</td><td><b>${money(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0)))}</b></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty" style="padding:12px 0">No travel claims recorded yet. Add your first claim from Travel Claims.</div>'
+    }
+    function renderVisits() { let q = $('search').value.toLowerCase(), sf = $('statusFilter').value, fd = $('fromDate').value, td = $('toDate').value; let a = visits.filter(v => (!q || [v.company, v.owner, v.ref, v.product, v.additional, v.phone].join(' ').toLowerCase().includes(q)) && (!sf || v.status === sf) && (!fd || v.date >= fd) && (!td || v.date <= td)); $('visitRows').innerHTML = a.length ? a.map(v => { const p = profitForVisit(v); return `<tr><td>${v.date}</td><td><b>${esc(v.company)}</b><br><small>${esc(v.industry)}</small></td><td>${esc(v.owner)}</td><td>${esc(v.ref)}</td><td>${esc(v.product)}</td><td>${money(v.price)}</td><td>${esc(v.additional || '-')}</td><td>${money(v.addPrice)}</td><td>${p ? money(p.grossMargin) : '—'}</td><td>${p ? money(p.referenceCommission) : '—'}</td><td>${p ? money(p.netProfit) : '—'}</td><td><span class="pill ${v.status === 'Closed' ? 'y' : v.status === 'Not Interested' ? 'n' : 'f'}">${v.status}</span></td><td>${v.follow || '-'}</td><td>${v.payment}</td><td><button class="btn light" onclick="editVisit(${v.id})">Edit</button> <button class="btn danger" onclick="delVisit(${v.id})">Delete</button></td></tr>` }).join('') : '<tr><td colspan="15" class="empty">No matching visits.</td></tr>' }
+    let editingId = null;
+    function editVisit(id) {
+      let v = visits.find(x => x.id === id); if (!v) return;
+      editingId = id;
+      $('vDate').value = v.date || today(); $('vCompany').value = v.company || ''; $('vOwner').value = v.owner || '';
+      $('vRef').value = v.ref || ''; $('vRefPct').value = Number(v.refPct || 0); $('vRefComm').value = Number(v.refComm || 0); commissionInputMode = (Number(v.refComm || 0) > 0 && Number(v.refPct || 0) === 0) ? 'rupee' : 'pct'; $('vPhone').value = v.phone || ''; $('vIndustry').value = v.industry || ''; $('vPurpose').value = v.purpose || '';
+      $('vProduct').value = v.product || ''; $('vPrice').value = v.price || productPrice(v.product).sell || 0; $('vStatus').value = v.status || 'Pending';
+      $('vAdditional').value = v.additional || ''; $('vAddPrice').value = v.addPrice || 0; $('vFollow').value = v.follow || ''; refreshVisitProfit(commissionInputMode);
+      $('vPayment').value = v.payment || 'Not Applicable';
+      $('vDiscussion').value = v.discussion || ''; $('vRemarks').value = v.remarks || '';
+      showPage('visit');
+      document.querySelector('#visit h2').textContent = 'Edit Customer Visit';
+      document.querySelector('#visit .sub').textContent = 'Update the saved visit details and save your changes.';
+      document.querySelector('#visitForm .primary').textContent = 'Update Visit';
+      toast('Visit loaded for editing');
+    }
+    function delVisit(id) { if (confirm('Delete this visit?')) { visits = visits.filter(v => v.id !== id); localStorage.setItem(KEY, JSON.stringify(visits)); let rs = reminderStore(); Object.keys(rs).filter(k => k.endsWith(':' + id)).forEach(k => delete rs[k]); saveReminderStore(rs); renderVisits(); renderDashboard(); renderReports(); renderReminders(); toast('Visit deleted') } }
+    function taskStoreSave() { localStorage.setItem(TASK, JSON.stringify(tasks)) }
+    function resetTask() { editingTaskId = null; $('taskForm').reset(); $('taskDate').value = today(); $('taskDue').value = today(); $('taskPriority').value = 'Medium'; $('taskStatus').value = 'Pending'; $('taskSaveBtn').textContent = 'Save Task' }
+    let editingTaskId = null;
+    function newTask() { showPage('tasks'); resetTask(); setTimeout(() => $('taskTitle').focus(), 50) }
+    function saveTask(e) { e.preventDefault(); const status = $('taskStatus').value; let x = { id: editingTaskId || Date.now(), date: $('taskDate').value, title: $('taskTitle').value.trim(), company: $('taskCompany').value.trim(), owner: $('taskOwner').value.trim(), category: $('taskCategory').value, due: $('taskDue').value || $('taskDate').value, priority: $('taskPriority').value, status, notes: $('taskNotes').value.trim(), completedAt: status === 'Completed' ? (tasks.find(t => t.id === editingTaskId)?.completedAt || new Date().toISOString()) : '' }; if (!x.title) { toast('Please enter the task'); return } if (editingTaskId) { let i = tasks.findIndex(t => t.id === editingTaskId); if (i >= 0) tasks[i] = x; toast('Task updated successfully') } else { tasks.unshift(x); toast('Task saved successfully') } taskStoreSave(); editingTaskId = null; resetTask(); renderTasks(); renderReminders(); }
+    function editTask(id) { let t = tasks.find(x => x.id === id); if (!t) return; editingTaskId = id; $('taskDate').value = t.date || today(); $('taskTitle').value = t.title || ''; $('taskCompany').value = t.company || ''; $('taskOwner').value = t.owner || ''; $('taskCategory').value = t.category || 'Other'; $('taskDue').value = t.due || t.date || today(); $('taskPriority').value = t.priority || 'Medium'; $('taskStatus').value = t.status || 'Pending'; $('taskNotes').value = t.notes || ''; $('taskSaveBtn').textContent = 'Update Task'; showPage('tasks'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+    function completeTask(id) { let t = tasks.find(x => x.id === id); if (!t) return; t.status = 'Completed'; t.completedAt = t.completedAt || new Date().toISOString(); taskStoreSave(); renderTasks(); renderReminders(); toast('✓ Task completed') }
+    function reopenTask(id) { let t = tasks.find(x => x.id === id); if (!t) return; t.status = 'Pending'; t.completedAt = ''; taskStoreSave(); renderTasks(); renderReminders(); toast('Task moved back to pending') }
+    function deleteTask(id) { if (confirm('Delete this task?')) { tasks = tasks.filter(t => t.id !== id); taskStoreSave(); renderTasks(); renderReminders(); toast('Task deleted') } }
+    function taskDueState(t) { if (t.status === 'Completed') return 'completed'; let d = t.due || t.date || today(), diff = dateDiff(d, today()); return diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming' }
+    function taskPriorityClass(p) { return p === 'High' ? 'priorityHigh' : p === 'Low' ? 'priorityLow' : 'priorityMedium' }
+    function renderTasks() { let q = ($('taskSearch')?.value || '').toLowerCase(), fd = $('taskFrom')?.value || '', td = $('taskTo')?.value || '', sf = $('taskStatusFilter')?.value || '', cf = $('taskCategoryFilter')?.value || ''; let a = tasks.filter(t => (!q || [t.title, t.company, t.owner, t.notes, t.category].join(' ').toLowerCase().includes(q)) && (!fd || t.date >= fd) && (!td || t.date <= td) && (!sf || t.status === sf) && (!cf || t.category === cf)).sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(a.due || '').localeCompare(String(b.due || ''))); let todayTasks = tasks.filter(t => (t.date === today() || t.due === today())), pending = tasks.filter(t => t.status !== 'Completed'), doneToday = tasks.filter(t => t.status === 'Completed' && String(t.completedAt || '').slice(0, 10) === today()).length, overdue = tasks.filter(t => taskDueState(t) === 'overdue').length; $('taskToday').textContent = todayTasks.length; $('taskPending').textContent = pending.length; $('taskDoneToday').textContent = doneToday; $('taskOverdue').textContent = overdue; $('taskHistory').innerHTML = a.length ? a.map(t => { let state = taskDueState(t), done = t.status === 'Completed'; return `<div class="taskItem ${state}"><div class="taskMain"><div><span class="pill ${taskPriorityClass(t.priority)}">${esc(t.priority)}</span> <span class="pill ${done ? 'y' : state === 'overdue' ? 'n' : 'f'}">${esc(t.status)}</span> <span class="taskName ${done ? 'done' : ''}">${esc(t.title)}</span></div><div class="taskMeta">${esc(t.date)} • ${esc(t.category || 'Other')} • Due: ${esc(t.due || t.date || '-')}${t.completedAt ? ' • Completed: ' + esc(String(t.completedAt).slice(0, 10)) : ''}</div>${(t.company || t.owner) ? `<div class="taskMeta"><b>📍 Company:</b> ${esc(t.company || '—')}${t.owner ? ` • <b>Owner:</b> ${esc(t.owner)}` : ''}</div>` : ''}${t.notes ? `<div class="taskMeta">${esc(t.notes)}</div>` : ''}</div><div class="taskActions">${done ? `<button class="btn light" onclick="reopenTask(${t.id})">↩ Reopen</button>` : `<button class="btn success" onclick="completeTask(${t.id})">✓ Complete</button>`}<button class="btn light" onclick="editTask(${t.id})">Edit</button><button class="btn danger" onclick="deleteTask(${t.id})">Delete</button></div></div>` }).join('') : '<div class="empty">No tasks found for the selected filters.</div>' }
+    function taskReminderItems() { return tasks.filter(t => t.status !== 'Completed').map(t => { let due = t.due || t.date || today(), diff = dateDiff(due, today()); return { ...t, key: 'task:' + t.id, priority: diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming' } }) }
+    let editingLeadId = null;
+    function leadStoreSave() { localStorage.setItem(LEAD, JSON.stringify(leads)) }
+    function leadMonthKey(d) { return String(d || '').slice(0, 7) }
+    function leadIsQualified(l) { return l.status === 'Qualified' || l.status === 'Converted' }
+    function resetLead() { editingLeadId = null; $('leadForm').reset(); $('leadDate').value = today(); $('leadStatus').value = 'New'; $('leadSource').value = 'Phone'; $('leadSaveBtn').textContent = 'Save Lead Call'; $('leadFormTitle').textContent = 'Add Lead Call' }
+    function saveLead(e) { e.preventDefault(); try { const mobile = $('leadMobile').value.trim(), norm = mobile.replace(/\D/g, ''); if (!$('leadName').value.trim() || !mobile) { toast('Please enter lead name and mobile number'); return } const old = editingLeadId ? leads.find(l => l.id === editingLeadId) : null; const prior = leads.filter(l => String(l.mobile || '').replace(/\D/g, '') === norm && l.id !== editingLeadId).length; const x = { id: editingLeadId || Date.now(), callNo: old?.callNo || prior + 1, date: $('leadDate').value || today(), name: $('leadName').value.trim(), mobile, purpose: $('leadPurpose').value.trim(), source: $('leadSource').value, status: $('leadStatus').value, follow: $('leadFollow').value, next: $('leadNext').value.trim(), discussion: $('leadDiscussion').value.trim(), remarks: $('leadRemarks').value.trim() }; if (editingLeadId) { const i = leads.findIndex(l => l.id === editingLeadId); if (i < 0) { toast('Lead could not be found. Please try again.'); return } leads[i] = x; toast('Lead call updated successfully') } else { leads.unshift(x); toast('Lead call saved successfully') } leadStoreSave(); let rs = reminderStore(); Object.keys(rs).filter(k => k.startsWith('lead:') && k.endsWith(':' + x.id)).forEach(k => delete rs[k]); saveReminderStore(rs); resetLead(); renderLeads(); renderReminders() } catch (err) { console.error(err); toast('Lead could not be saved. Please check the form and try again.') } }
+    function editLead(id) { const l = leads.find(x => x.id === id); if (!l) return; editingLeadId = id; $('leadName').value = l.name || ''; $('leadMobile').value = l.mobile || ''; $('leadDate').value = l.date || today(); $('leadPurpose').value = l.purpose || ''; $('leadSource').value = l.source || 'Phone'; $('leadStatus').value = l.status || 'Called'; $('leadFollow').value = l.follow || ''; $('leadNext').value = l.next || ''; $('leadDiscussion').value = l.discussion || ''; $('leadRemarks').value = l.remarks || ''; $('leadSaveBtn').textContent = 'Update Lead Call'; $('leadFormTitle').textContent = 'Edit Lead Call'; window.scrollTo({ top: 0, behavior: 'smooth' }) }
+    function deleteLead(id) { if (!confirm('Delete this lead call?')) return; leads = leads.filter(l => l.id !== id); leadStoreSave(); let rs = reminderStore(); Object.keys(rs).filter(k => k.endsWith(':' + id) && k.startsWith('lead:')).forEach(k => delete rs[k]); saveReminderStore(rs); renderLeads(); renderReminders(); toast('Lead call deleted') }
+    function renderLeadMonthOptions() { const months = [...new Set(leads.map(l => leadMonthKey(l.date)).filter(Boolean))].sort().reverse(), el = $('leadMonth'); if (!el) return; const cur = el.value; el.innerHTML = '<option value="">All Months</option>' + months.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join(''); el.value = months.includes(cur) ? cur : '' }
+    function getFilteredLeads() { const q = ($('leadSearch')?.value || '').toLowerCase(), fd = $('leadFrom')?.value || '', td = $('leadTo')?.value || '', sf = $('leadStatusFilter')?.value || '', mo = $('leadMonth')?.value || ''; return leads.filter(l => (!q || [l.name, l.mobile, l.purpose, l.discussion, l.remarks, l.next, l.source].join(' ').toLowerCase().includes(q)) && (!fd || l.date >= fd) && (!td || l.date <= td) && (!sf || l.status === sf) && (!mo || leadMonthKey(l.date) === mo)).sort((a, b) => String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id)) }
+    function renderLeads() { renderLeadMonthOptions(); const a = getFilteredLeads(), monthRef = $('leadMonth')?.value || currentMonthKey(), monthLeads = leads.filter(l => leadMonthKey(l.date) === monthRef), unique = new Set(monthLeads.map(l => String(l.mobile || '').replace(/\D/g, '') || String(l.name || '').toLowerCase())).size, qualified = monthLeads.filter(leadIsQualified).length, followDue = leads.filter(l => l.follow && l.follow <= today() && !['Converted', 'Not Interested'].includes(l.status)).length; $('leadCalls').textContent = monthLeads.length; $('leadUnique').textContent = unique; $('leadQualified').textContent = qualified; $('leadRate').textContent = monthLeads.length ? Math.round(qualified / monthLeads.length * 100) + '%' : '0%'; $('leadFollowDue').textContent = followDue; $('leadHistory').innerHTML = a.length ? a.map(l => { const due = l.follow && l.follow <= today() && !['Converted', 'Not Interested'].includes(l.status); return `<div class="leadItem"><div class="leadMain"><div><span class="pill ${l.status === 'Qualified' || l.status === 'Converted' ? 'y' : l.status === 'Not Interested' ? 'n' : 'f'}">${esc(l.status)}</span> <span class="leadName">${esc(l.name)}</span> <span class="leadStatus">Call #${l.callNo || 1}</span></div><div class="leadMeta">📞 ${esc(l.mobile)} • ${esc(l.date)} • Purpose: ${esc(l.purpose || '—')} • Source: ${esc(l.source || '—')}</div><div class="leadMeta">${l.discussion ? `<b>Discussion:</b> ${esc(l.discussion)}` : 'No discussion entered.'}</div><div class="leadMeta">${l.follow ? `<b>Next Follow-up:</b> ${esc(l.follow)}${due ? ' • ⚠ Due' : ''}` : '<b>Next Follow-up:</b> Not set'}${l.next ? ` • <b>Next Action:</b> ${esc(l.next)}` : ''}</div>${l.remarks ? `<div class="leadMeta"><b>Remarks:</b> ${esc(l.remarks)}</div>` : ''}</div><div class="leadActions"><button class="btn light" onclick="editLead(${l.id})">Edit</button><button class="btn danger" onclick="deleteLead(${l.id})">Delete</button></div></div>` }).join('') : '<div class="empty">No lead calls found for the selected filters.</div>'; const months = [...new Set(leads.map(l => leadMonthKey(l.date)).filter(Boolean))].sort().reverse(); $('leadMonthReport').innerHTML = months.length ? months.map(m => { const arr = leads.filter(l => leadMonthKey(l.date) === m), uq = new Set(arr.map(l => String(l.mobile || '').replace(/\D/g, '') || String(l.name || '').toLowerCase())).size, qf = arr.filter(leadIsQualified).length, cv = arr.filter(l => l.status === 'Converted').length, ni = arr.filter(l => l.status === 'Not Interested').length, fu = arr.filter(l => l.status === 'Follow-up').length; return `<tr><td><b>${esc(m)}</b></td><td>${arr.length}</td><td>${uq}</td><td><span class="pill y">${qf}</span></td><td>${cv}</td><td>${arr.length ? Math.round(qf / arr.length * 100) : 0}%</td><td>${ni}</td><td>${fu}</td></tr>` }).join('') : '<tr><td colspan="8" class="empty">No lead calls recorded yet.</td></tr>' }
+
+    function reminderStore() { return JSON.parse(localStorage.getItem(REM) || '{}') }
+    function saveReminderStore(x) { localStorage.setItem(REM, JSON.stringify(x)) }
+    function dateDiff(a, b) { let x = new Date(a + 'T00:00:00'), y = new Date(b + 'T00:00:00'); return Math.round((x - y) / 86400000) }
+    function reminderItems() {
+      const todayDate = today(), store = reminderStore(), out = [];
+      visits.forEach(v => {
+        const sales = Number(v.price || 0) + Number(v.addPrice || 0);
+        const base = { id: String(v.id), company: v.company || 'Unknown company', owner: v.owner || '', phone: v.phone || '', visit: v.date || todayDate, remarks: v.remarks || '' };
+        if (v.payment === 'Pending' || v.payment === 'Partial') {
+          const due = v.follow || todayDate, diff = dateDiff(due, todayDate), key = 'payment:' + v.id;
+          if (!store[key]?.done) out.push({ ...base, key, type: 'Payment', title: v.payment === 'Partial' ? 'Partial payment to collect' : 'Payment to collect', amount: sales, due, priority: diff < 0 ? 'overdue' : diff === 0 ? 'today' : 'upcoming' });
+        }
+        if (v.follow && v.status !== 'Closed' && v.status !== 'Not Interested') {
+          const diff = dateDiff(v.follow, todayDate), key = 'follow:' + v.id;
+          if (diff <= 0 && !store[key]?.done) out.push({ ...base, key, type: 'Follow-up', title: diff < 0 ? 'Overdue follow-up' : 'Follow-up due today', due: v.follow, priority: diff < 0 ? 'overdue' : 'today' });
+        }
+        if ((v.status === 'Pending' || v.status === 'Hot Lead' || v.status === 'Follow-up') && !v.follow) {
+          const key = 'deal:' + v.id;
+          if (!store[key]?.done) out.push({ ...base, key, type: 'Pending Deal', title: 'Pending sales follow-up', due: todayDate, priority: 'today' });
+        }
+      });
+      leads.forEach(l => { if (l.follow && !['Converted', 'Not Interested'].includes(l.status)) { const diff = dateDiff(l.follow, todayDate), key = 'lead:' + l.id; if (diff <= 0 && !store[key]?.done) out.push({ id: String(l.id), key, type: 'Lead Follow-up', title: diff < 0 ? 'Overdue lead follow-up' : 'Lead follow-up due today', company: l.name || 'Lead', owner: '', phone: l.mobile || '', due: l.follow, priority: diff < 0 ? 'overdue' : 'today', amount: '', remarks: l.next || l.discussion || '' }) } });
+      taskReminderItems().forEach(t => { if (!store[t.key]?.done) out.push({ id: String(t.id), key: t.key, type: 'Task', title: t.title, company: t.company || 'Daily Task', owner: t.owner || '', phone: '', due: t.due || t.date, priority: t.priority, amount: '', remarks: t.notes || '' }) });
+      return out.sort((a, b) => (({ overdue: 0, today: 1, upcoming: 2 }[a.priority] ?? 9) - ({ overdue: 0, today: 1, upcoming: 2 }[b.priority] ?? 9)) || String(a.due).localeCompare(String(b.due)));
+    }
+    function renderReminders() {
+      const a = reminderItems(), overdue = a.filter(x => x.priority === 'overdue').length, todayCount = a.filter(x => x.priority === 'today').length, payments = a.filter(x => x.type === 'Payment').length;
+      $('remToday').textContent = todayCount; $('remOverdue').textContent = overdue; $('remPayment').textContent = payments;
+      $('reminderList').innerHTML = a.length ? a.map(r => `<div class="reminderItem ${r.priority}"><div><div><span class="pill ${r.priority === 'overdue' ? 'n' : 'f'}">${esc(r.type)}</span> <b>${esc(r.title)}</b></div><div style="margin-top:5px"><b>${esc(r.company)}</b>${r.owner ? ' • ' + esc(r.owner) : ''}${r.phone ? ' • ' + esc(r.phone) : ''}</div><div class="reminderMeta">Due: ${esc(r.due)}${r.amount ? ` • Amount: ${money(r.amount)}` : ''}${r.remarks ? ' • ' + esc(r.remarks) : ''}</div></div><div class="reminderActions"><button class="btn light" onclick="openReminderVisit('${r.key}',${Number(r.id)})">${r.type === 'Task' ? 'Open Task' : 'Open Visit'}</button><button class="btn primary" onclick="completeReminder('${r.key}')">Mark Done</button></div></div>`).join('') : '<div class="empty">🎉 No pending reminders. Everything is up to date.</div>';
+    }
+    function completeReminder(key) { if (key.startsWith('task:')) { let id = Number(key.slice(5)); completeTask(id); return } let s = reminderStore(); s[key] = { done: true, doneAt: new Date().toISOString() }; saveReminderStore(s); renderReminders(); toast('Reminder marked done') }
+    function openReminderVisit(key, id) { if (String(key).startsWith('task:')) { editTask(Number(id)); return } if (String(key).startsWith('lead:')) { showPage('leads'); editLead(Number(id)); return } editVisit(Number(id)) }
+    function requestReminderNotifications() { if (!('Notification' in window)) { alert('Browser notifications are not supported on this device/browser. Reminders will still appear inside the app.'); return } Notification.requestPermission().then(p => { if (p === 'granted') { toast('Notifications enabled'); checkReminderNotifications(true) } else toast('Notification permission was not granted') }) }
+    function checkReminderNotifications(force) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const a = reminderItems().filter(x => x.priority === 'overdue' || x.priority === 'today'); if (!a.length) return;
+      const stamp = today(), s = reminderStore(); if (!force && s.lastNotified === stamp) return;
+      a.slice(0, 5).forEach(r => new Notification('DoricTrack Reminder', { body: `${r.title}: ${r.company}${r.owner ? ' • ' + r.owner : ''}${r.amount ? ' • ' + money(r.amount) : ''}` })); s.lastNotified = stamp; saveReminderStore(s);
+    }
+    function renderReports() {
+      let sales = closedSalesValue(), claim = visits.reduce((a, v) => a + v.km * v.rate, 0), closed = visits.filter(v => v.status === 'Closed').length, ps = profitSummary(); $('rSales').textContent = money(sales); $('rClaim').textContent = money(claim); $('rClosed').textContent = closed; $('rOpen').textContent = visits.length - closed; $('rGrossMargin').textContent = money(ps.grossMargin); $('rRefCommission').textContent = money(ps.referenceCommission); $('rProfit').textContent = money(ps.netProfit);
+      let total = visits.length, statuses = ['Closed', 'Hot Lead', 'Follow-up', 'Pending', 'Not Interested']; $('statusReport').innerHTML = statuses.map(s => { let n = visits.filter(v => v.status === s).length; return `<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><span>${s}</span><b>${n} (${total ? Math.round(n / total * 100) : 0}%)</b></div>` }).join('');
+      let pm = {}; visits.forEach(v => { pm[v.product || 'Unspecified'] = (pm[v.product || 'Unspecified'] || 0) + v.price; }); let pa = Object.entries(pm).sort((a, b) => b[1] - a[1]); $('productReport').innerHTML = pa.length ? pa.map(([p, n]) => `<div style="margin:9px 0"><div style="display:flex;justify-content:space-between"><span>${esc(p)}</span><b>${money(n)}</b></div></div>`).join('') : '<div class="empty">No data.</div>';
+      let cm = {}; visits.forEach(v => { let c = v.company; if (!cm[c]) cm[c] = { n: 0, closed: 0, sales: 0, last: '', status: '' }; cm[c].n++; if (v.status === 'Closed') { cm[c].closed++; cm[c].sales += Number(v.price || 0) + Number(v.addPrice || 0) } if (v.date > cm[c].last) { cm[c].last = v.date; cm[c].status = v.status } }); let ca = Object.entries(cm).sort((a, b) => b[1].sales - a[1].sales); $('companyReport').innerHTML = ca.length ? ca.map(([c, x]) => `<tr><td><b>${esc(c)}</b></td><td>${x.n}</td><td>${x.closed}</td><td>${money(x.sales)}</td><td>${x.last}</td><td>${x.status}</td></tr>`).join('') : '<tr><td colspan="6" class="empty">No company data.</td></tr>'; let monthMap = {}; ps.rows.forEach(v => { const p = profitForVisit(v); if (!p) return; const items = [[v.product, v.price, knownCost(v.product, v.cost)], [v.additional, v.addPrice, knownCost(v.additional, v.addCost)]]; const totalGM = p.grossMargin || 0; items.forEach(([name, sale, c]) => { if (!name || !sale) return; if (!monthMap[name]) monthMap[name] = { units: 0, sales: 0, cost: 0, gross: 0, commission: 0, missing: false }; monthMap[name].units++; monthMap[name].sales += Number(sale || 0); if (c === null) monthMap[name].missing = true; else { const gm = Number(sale || 0) - Number(c || 0); monthMap[name].cost += Number(c || 0); monthMap[name].gross += gm; monthMap[name].commission += totalGM ? Number(p.referenceCommission || 0) * (gm / totalGM) : 0 } }) }); let profitRows = Object.entries(monthMap).sort((a, b) => b[1].gross - b[1].gross); $('profitReport').innerHTML = profitRows.length ? profitRows.map(([p, x]) => { let net = Math.max(0, x.gross - x.commission), mg = x.sales ? net / x.sales * 100 : 0; return `<tr><td><b>${esc(p)}</b></td><td>${x.units}</td><td>${money(x.sales)}</td><td>${x.missing ? 'Cost Not Set' : money(x.cost)}</td><td><b>${x.missing ? '—' : money(x.gross)}</b></td><td>${x.missing ? '—' : money(x.commission)}</td><td><b>${x.missing ? '—' : money(net)}</b></td><td>${x.missing ? '—' : mg.toFixed(1) + '%'}</td></tr>` }).join('') : `<tr><td colspan="8" class="empty">No closed sales for ${currentMonthKey()}.</td></tr>`
+      let tm = {}; tasks.filter(t => String(t.date || '').slice(0, 7) === currentMonthKey()).forEach(t => { let d = t.date || '-'; if (!tm[d]) tm[d] = { total: 0, done: 0, pending: 0, items: [] }; tm[d].total++; if (t.status === 'Completed') tm[d].done++; else tm[d].pending++; tm[d].items.push((t.status === 'Completed' ? '✓ ' : '○ ') + t.title + (t.company ? ' — ' + t.company : '') + (t.owner ? ' (' + t.owner + ')' : '')) }); let ta = Object.entries(tm).sort((a, b) => a[0].localeCompare(b[0])); $('taskMonthReport').innerHTML = ta.length ? ta.map(([d, x]) => `<tr><td><b>${esc(d)}</b></td><td>${x.total}</td><td><span class="pill y">${x.done}</span></td><td>${x.pending}</td><td>${x.items.map(esc).join('<br>')}</td></tr>`).join('') : `<tr><td colspan="5" class="empty">No tasks recorded for ${currentMonthKey()}.</td></tr>`
+    }
+
+    function travelStoreSave() { localStorage.setItem(TRAVEL, JSON.stringify(travelClaims || [])) }
+    function initTravelClaims() {
+      if (!Array.isArray(travelClaims)) {
+        travelClaims = visits.filter(v => Number(v.km || 0) > 0).map(v => ({
+          id: 'legacy-' + String(v.id), date: v.date || today(), company: v.company || '', from: '', to: '', purpose: v.purpose || 'Customer Visit',
+          km: Number(v.km || 0), rate: Number(v.rate || 3.5), amount: Number(v.km || 0) * Number(v.rate || 3.5), remarks: v.remarks || '', legacyVisitId: v.id
+        }));
+        travelStoreSave();
+      }
+      renderTravelCompanies();
+    }
+    function refreshTravelClaim() {
+      const km = Math.max(Number($('tcKm')?.value || 0), 0), rate = Math.max(Number($('tcRate')?.value || 0), 0);
+      if ($('tcAmount')) $('tcAmount').value = (km * rate).toFixed(2);
+    }
+    function renderTravelCompanies() {
+      const el = $('travelCompanies'); if (!el) return;
+      const names = [...new Set([...(visits || []).map(v => v.company), ...(travelClaims || []).map(v => v.company)].filter(Boolean).map(String))].sort((a, b) => a.localeCompare(b));
+      el.innerHTML = names.map(n => `<option value="${esc(n)}"></option>`).join('');
+    }
+    function resetTravelClaim() {
+      editingTravelClaimId = null;
+      const f = $('travelClaimForm'); if (f) f.reset();
+      $('tcDate').value = today(); $('tcRate').value = 3.5; $('tcAmount').value = '0';
+      $('travelFormTitle').textContent = 'Add Travel Claim'; $('travelSaveBtn').textContent = 'Save Travel Claim';
+    }
+    function saveTravelClaim(e) {
+      e.preventDefault();
+      try {
+        const date = $('tcDate').value, company = $('tcCompany').value.trim(), km = Math.max(Number($('tcKm').value || 0), 0), rate = Math.max(Number($('tcRate').value || 0), 0);
+        if (!date || !company || km <= 0) { toast('Please enter Travel Date, Company / Place and KM'); return }
+        const x = { id: editingTravelClaimId || Date.now(), date, company, from: $('tcFrom').value.trim(), to: $('tcTo').value.trim(), purpose: $('tcPurpose').value.trim(), km, rate, amount: Number((km * rate).toFixed(2)), remarks: $('tcRemarks').value.trim() };
+        if (editingTravelClaimId) { const i = travelClaims.findIndex(v => v.id === editingTravelClaimId); if (i < 0) { toast('Travel claim could not be found'); return } travelClaims[i] = x; toast('Travel claim updated successfully') } else { travelClaims.unshift(x); toast('Travel claim saved successfully') }
+        travelStoreSave(); editingTravelClaimId = null; resetTravelClaim(); renderTravelCompanies(); renderTravel(); renderDashboard();
+      } catch (err) { console.error(err); toast('Travel claim could not be saved. Please try again.') }
+    }
+    function editTravelClaim(id) {
+      const v = travelClaims.find(x => String(x.id) === String(id)); if (!v) return;
+      editingTravelClaimId = v.id; $('tcDate').value = v.date || today(); $('tcCompany').value = v.company || ''; $('tcFrom').value = v.from || ''; $('tcTo').value = v.to || ''; $('tcPurpose').value = v.purpose || ''; $('tcKm').value = v.km || 0; $('tcRate').value = v.rate || 3.5; $('tcRemarks').value = v.remarks || ''; refreshTravelClaim(); $('travelFormTitle').textContent = 'Edit Travel Claim'; $('travelSaveBtn').textContent = 'Update Travel Claim'; window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function deleteTravelClaim(id) { if (!confirm('Delete this travel claim?')) return; travelClaims = travelClaims.filter(v => String(v.id) !== String(id)); travelStoreSave(); renderTravel(); renderDashboard(); toast('Travel claim deleted') }
+    function getFilteredTravel() {
+      const q = ($('travelSearch')?.value || '').toLowerCase(), fd = $('travelFrom')?.value || '', td = $('travelTo')?.value || '';
+      return (travelClaims || []).filter(v => (!q || [v.company, v.from, v.to, v.purpose, v.remarks].join(' ').toLowerCase().includes(q)) && (!fd || v.date >= fd) && (!td || v.date <= td));
+    }
+    function renderTravel() {
+      renderTravelCompanies();
+      const a = getFilteredTravel(), km = a.reduce((s, v) => s + Number(v.km || 0), 0), claim = a.reduce((s, v) => s + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0);
+      $('tVisits').textContent = a.length; $('tKm').textContent = km.toLocaleString('en-IN', { maximumFractionDigits: 1 }); $('tClaim').textContent = money(claim); $('tAvg').textContent = money(a.length ? claim / a.length : 0); $('travelTotalKm').textContent = km.toLocaleString('en-IN', { maximumFractionDigits: 1 }); $('travelTotalClaim').textContent = money(claim);
+      $('travelRows').innerHTML = a.length ? a.map((v, i) => { const id = String(v.id).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); return `<tr><td>${i + 1}</td><td>${esc(v.date)}</td><td><b>${esc(v.company)}</b></td><td>${esc(v.from || '—')}</td><td>${esc(v.to || '—')}</td><td>${esc(v.purpose || '—')}</td><td>${Number(v.km || 0).toLocaleString('en-IN', { maximumFractionDigits: 1 })}</td><td>${money(v.rate)}</td><td><b>${money(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0)))}</b></td><td>${esc(v.remarks || '—')}</td><td class="no-print"><button type="button" class="btn light travel-edit-btn" data-id="${id}">Edit</button> <button type="button" class="btn danger travel-delete-btn" data-id="${id}">Delete</button></td></tr>` }).join('') : '<tr><td colspan="11" class="empty">No travel claim records found.</td></tr>';
+    }
+
+    function getFilteredVisits() {
+      let q = ($('search')?.value || '').toLowerCase(), sf = $('statusFilter')?.value || '', fd = $('fromDate')?.value || '', td = $('toDate')?.value || '';
+      return visits.filter(v => (!q || [v.company, v.owner, v.ref, v.product, v.additional, v.phone].join(' ').toLowerCase().includes(q)) && (!sf || v.status === sf) && (!fd || v.date >= fd) && (!td || v.date <= td));
+    }
+    function exportRows(type) {
+      if (type === 'leads') return getFilteredLeads().map(l => [l.callNo || 1, l.date, l.name, l.mobile, l.purpose || '', l.source || '', l.discussion || '', l.status, l.follow || '', l.next || '', l.remarks || '']);
+      if (type === 'tasks') return tasks.filter(t => (!($('taskFrom')?.value) || t.date >= $('taskFrom').value) && (!($('taskTo')?.value) || t.date <= $('taskTo').value) && (!($('taskStatusFilter')?.value) || t.status === $('taskStatusFilter').value) && (!($('taskCategoryFilter')?.value) || t.category === $('taskCategoryFilter').value)).map(t => [t.date, t.title, t.company || '', t.owner || '', t.category, t.due, t.priority, t.status, t.completedAt ? String(t.completedAt).slice(0, 10) : '', t.notes || '']);
+      if (type === 'visits') return getFilteredVisits().map(v => { const p = profitForVisit(v); return [v.date, v.company, v.owner, v.ref, Number(v.refPct || 0), Number(v.refComm || 0), v.product, v.price, v.additional, v.addPrice, p ? p.grossMargin : '', p ? p.netProfit : '', v.status, v.follow, v.payment] });
+      if (type === 'travel') return getFilteredTravel().map((v, i) => [i + 1, v.date, v.company, v.from || '', v.to || '', v.purpose || '', Number(v.km || 0), Number(v.rate || 0), Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), v.remarks || '']);
+      if (type === 'reminders') return reminderItems().map(r => [r.type, r.title, r.company, r.owner, r.phone, r.due, r.amount || '', r.priority, r.remarks || '']);
+      if (type === 'reports') {
+        let sales = closedSalesValue(), claim = (travelClaims || []).reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0), closed = visits.filter(v => v.status === 'Closed').length;
+        let ps = profitSummary(); let rows = [['Management Report', 'Value'], ['Main + Add-on Sales', sales], ['Travel Claim', claim], ['Closed Deals', closed], ['Open Pipeline', visits.length - closed], ['Current Month Gross Margin', ps.grossMargin], ['Reference Commission', ps.referenceCommission], ['Current Month Net Company Profit', ps.netProfit], ['Net Profit Margin', ps.margin.toFixed(1) + '%'], ['Sales With Cost Not Set', ps.missingCostSales], [], ['Status', 'Count', 'Percent']];
+        ['Closed', 'Hot Lead', 'Follow-up', 'Pending', 'Not Interested'].forEach(st => { let n = visits.filter(v => v.status === st).length; rows.push([st, n, visits.length ? Math.round(n / visits.length * 100) + '%' : '0%']) });
+        rows.push([], ['Company', 'Visits', 'Closed', 'Sales Value', 'Last Visit', 'Latest Status']);
+        let cm = {}; visits.forEach(v => { let c = v.company; if (!cm[c]) cm[c] = { n: 0, closed: 0, sales: 0, last: '', status: '' }; cm[c].n++; if (v.status === 'Closed') { cm[c].closed++; cm[c].sales += Number(v.price || 0) + Number(v.addPrice || 0) } if (v.date > cm[c].last) { cm[c].last = v.date; cm[c].status = v.status } }); Object.entries(cm).sort((a, b) => b[1].sales - a[1].sales).forEach(([c, x]) => rows.push([c, x.n, x.closed, x.sales, x.last, x.status]));
+        return rows;
+      }
+      let sales = closedSalesValue(), closed = visits.filter(v => v.status === 'Closed').length, claim = (travelClaims || []).reduce((a, v) => a + Number(v.amount ?? (Number(v.km || 0) * Number(v.rate || 0))), 0);
+      return [['Sales Dashboard', 'Value'], ['Total Visits', visits.length], ['Deals Closed', closed], ['Conversion Rate', visits.length ? Math.round(closed / visits.length * 100) + '%' : '0%'], ['Sales Value', sales], ['Travel Claim', claim]];
+    }
+    function exportHeaders(type) {
+      if (type === 'leads') return ['Call #', 'Call Date', 'Lead Name', 'Mobile Number', 'Call Purpose', 'Lead Source', 'Discussion / Outcome', 'Status', 'Next Follow-up', 'Next Action', 'Remarks'];
+      if (type === 'tasks') return ['Task Date', 'Task / Work', 'Company / Visited At', 'Owner / Contact Person', 'Category', 'Due Date', 'Priority', 'Status', 'Completed Date', 'Notes / Result'];
+      if (type === 'visits') return ['Date', 'Company', 'Owner', 'Reference', 'Ref Commission %', 'Ref Commission ₹', 'Main Product', 'Main ₹', 'Additional', 'Add ₹', 'Gross Margin', 'Net Profit', 'Status', 'Follow-up', 'Payment'];
+      if (type === 'travel') return ['#', 'Date', 'Company / Place', 'From', 'To', 'Travel Regarding / Purpose', 'KM', 'Rate', 'Claim Amount', 'Remarks'];
+      if (type === 'reminders') return ['Type', 'Reminder', 'Company', 'Owner', 'Phone', 'Due Date', 'Amount', 'Priority', 'Remarks'];
+      return [];
+    }
+    function csvCell(v) { let s = String(v ?? ''); return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s }
+    function downloadBlob(content, name, type) { let blob = new Blob([content], { type }), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }
+    function reportTitle(type) { return ({ dashboard: 'Sales Dashboard', visits: 'Visit Register', reports: 'Management Report', travel: 'Travel Claim Report', reminders: 'Pending Reminders', tasks: 'Daily Task Report', leads: 'Lead Calling Report' })[type] || 'Report' }
+    function reportHtml(type) {
+      if (type === 'leads') {
+        const rows = exportRows('leads'), headers = exportHeaders('leads'), uq = new Set(rows.map(r => String(r[3] || '').replace(/\D/g, '') || String(r[2] || '').toLowerCase())).size, qf = rows.filter(r => r[7] === 'Qualified' || r[7] === 'Converted').length, cv = rows.filter(r => r[7] === 'Converted').length;
+        const generated = new Date().toLocaleString('en-IN');
+        const body = rows.map(r => '<tr>' + r.map((v, i) => '<td>' + esc(v) + '</td>').join('') + '</tr>').join('');
+        return '<!doctype html><html><head><meta charset="UTF-8"><title>' + esc(settings.company) + ' - Lead Calling Report</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0;font-size:22px}h2{margin:4px 0 14px;font-size:16px}.meta{color:#667085;font-size:12px;margin:5px 0 12px}.summary{display:flex;gap:24px;background:#eef4f9;border:1px solid #c7d4e0;padding:9px 12px;margin:12px 0}.summary b{margin-right:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1f4e78;color:#fff;padding:8px;border:1px solid #163a5a}td{padding:7px;border:1px solid #c7d4e0;vertical-align:top}tbody tr:nth-child(even){background:#f7f9fb}@media print{@page{size:A4 landscape;margin:.4in}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><h1>' + esc(settings.company) + '</h1><h2>Lead Calling Report</h2><div class="meta">Generated: ' + esc(generated) + '</div><div class="summary"><span><b>Total Calls:</b>' + rows.length + '</span><span><b>Unique Leads:</b>' + uq + '</span><span><b>Qualified:</b>' + qf + '</span><span><b>Converted:</b>' + cv + '</span><span><b>Qualification:</b>' + (rows.length ? Math.round(qf / rows.length * 100) : 0) + '%</span></div><table><thead><tr>' + headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table><div class="meta">' + esc(settings.company) + ' • Lead Calling Report • ' + esc(generated) + '</div></body></html>';
+      }
+      let page = $(type); if (!page) page = $('dashboard'); let clone = page.cloneNode(true); clone.querySelectorAll('.no-print,.actions,button,input,select').forEach(x => x.remove());
+      let styles = document.querySelector('style').innerHTML;
+      return '<!doctype html><html><head><meta charset="UTF-8"><title>' + esc(settings.company) + ' - ' + reportTitle(type) + '</title><style>' + styles + '</style></head><body><main class="main" style="margin:0;width:100%">' + clone.outerHTML + '</main></body></html>';
+    }
+    function openExport(type) {
+      renderDashboard(); if (type === 'visits') renderVisits(); if (type === 'reports') renderReports(); if (type === 'travel') renderTravel(); if (type === 'reminders') renderReminders(); if (type === 'tasks') renderTasks(); if (type === 'leads') renderLeads();
+      window.exportingType = type; $('exportDescription').textContent = 'Exporting ' + reportTitle(type) + '. Current filters and visible report data will be used.'; $('exportModal').classList.add('show');
+    }
+    function closeExport() { $('exportModal').classList.remove('show'); window.exportingType = null }
+    function preparePrint(type) {
+      let page = $(type) || $('dashboard'); document.querySelectorAll('.page').forEach(x => { x.classList.remove('printable'); x.classList.remove('active') }); page.classList.add('printable'); page.classList.add('active');
+      if (type === 'travel') renderTravel();
+      window.addEventListener('afterprint', () => { page.classList.remove('printable'); page.classList.add('active') }, { once: true }); window.print(); setTimeout(() => { page.classList.remove('printable'); page.classList.add('active') }, 1800);
+    }
+    function performExport(format) {
+      let type = window.exportingType || 'visits', title = reportTitle(type), stamp = new Date().toISOString().slice(0, 10);
+      closeExport();
+      if (format === 'pdf') { preparePrint(type); return }
+      if (format === 'html') { downloadBlob(reportHtml(type), title.replace(/\s+/g, '_') + '_' + stamp + '.html', 'text/html;charset=utf-8'); toast('HTML report exported'); return }
+      let rows = exportRows(type), headers = exportHeaders(type), all = headers.length ? [headers, ...rows] : rows;
+      if (format === 'csv') { downloadBlob('\ufeff' + all.map(r => r.map(csvCell).join(',')).join('\r\n'), title.replace(/\s+/g, '_') + '_' + stamp + '.csv', 'text/csv;charset=utf-8'); toast('CSV report exported'); return }
+      // Excel-compatible HTML workbook with a print-ready report layout.
+      // It intentionally stays as .xls so Microsoft Excel opens it directly without
+      // requiring any external library, while CSS/mso print settings make it look
+      // like a proper office report on screen and when printed.
+      const company = esc(settings.company || 'Doric Multimedia Pvt Ltd');
+      const tag = esc(settings.tag || '');
+      const generated = new Date().toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const colCount = Math.max(headers.length, rows.reduce((m, r) => Math.max(m, r.length), 0), 1);
+      const summary = (() => {
+        if (type === 'travel') { const km = rows.reduce((a, r) => a + Number(r[6] || 0), 0), claim = rows.reduce((a, r) => a + Number(r[8] || 0), 0); return `<div class="summary"><span><b>Records:</b> ${rows.length}</span><span><b>Total KM:</b> ${km.toLocaleString('en-IN', { maximumFractionDigits: 1 })}</span><span><b>Total Claim:</b> ₹${claim.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>`; }
+        if (type === 'visits') { const sales = rows.filter(r => r[8] === 'Closed').reduce((a, r) => a + Number(r[5] || 0) + Number(r[7] || 0), 0), closed = rows.filter(r => r[8] === 'Closed').length; return `<div class="summary"><span><b>Total Visits:</b> ${rows.length}</span><span><b>Closed:</b> ${closed}</span><span><b>Sales Value:</b> ₹${sales.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>`; }
+        if (type === 'reminders') { const pending = rows.filter(r => r[7] !== 'done').length; return `<div class="summary"><span><b>Total Reminders:</b> ${rows.length}</span><span><b>Pending:</b> ${pending}</span></div>`; }
+        if (type === 'tasks') { const done = rows.filter(r => r[5] === 'Completed').length, p = rows.filter(r => r[5] !== 'Completed').length; return `<div class="summary"><span><b>Total Tasks:</b> ${rows.length}</span><span><b>Completed:</b> ${done}</span><span><b>Pending:</b> ${p}</span></div>`; }
+        if (type === 'leads') { const uq = new Set(rows.map(r => String(r[3] || '').replace(/\D/g, '') || String(r[2] || '').toLowerCase())).size, qf = rows.filter(r => r[7] === 'Qualified' || r[7] === 'Converted').length, cv = rows.filter(r => r[7] === 'Converted').length; return `<div class="summary"><span><b>Total Calls:</b> ${rows.length}</span><span><b>Unique Leads:</b> ${uq}</span><span><b>Qualified:</b> ${qf}</span><span><b>Converted:</b> ${cv}</span><span><b>Qualification:</b> ${rows.length ? Math.round(qf / rows.length * 100) : 0}%</span></div>`; }
+        return '';
+      })();
+      const widths = headers.map((h, i) => { const max = Math.max(String(h).length, ...rows.slice(0, 250).map(r => String(r[i] ?? '').length)); return Math.min(42, Math.max(10, Math.ceil(max * 1.05))); });
+      const numericMoney = (i) => /₹|Amount|Claim|Sales|Rate|Value|Main|Add ₹/i.test(headers[i] || '');
+      const tableRows = rows.map(r => '<tr>' + r.map((v, i) => { const cls = []; if (typeof v === 'number' && numericMoney(i)) cls.push('money'); if (typeof v === 'number' && !numericMoney(i)) cls.push('number'); return `<td class="${cls.join(' ')}">${esc(v)}</td>` }).join('') + '</tr>').join('');
+      let html = `<!doctype html><html><head><meta charset="UTF-8"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>${company} - ${esc(title)}</title>
+ <style>
+ @page{size:A4 landscape;margin:0.45in 0.35in 0.45in 0.35in;mso-page-orientation:landscape;mso-header-data:"";mso-footer-data:"Page &P of &N";}
+ body{font-family:Arial,Calibri,sans-serif;color:#172033;background:#fff;margin:0;font-size:10pt;}
+ .report{width:100%;} .head{border-bottom:3px solid #1f4e78;padding:4px 0 10px;margin-bottom:8px;}
+ .company{font-size:18pt;font-weight:800;letter-spacing:.2px;} .reportTitle{font-size:13pt;font-weight:700;margin-top:3px;}
+ .meta{font-size:8.5pt;color:#5b6575;margin-top:5px;} .summary{display:flex;gap:24px;background:#eef4f9;border:1px solid #c7d4e0;padding:7px 10px;margin:7px 0 10px;font-size:9pt;}
+ table{width:100%;border-collapse:collapse;table-layout:fixed;mso-table-layout-alt:auto;}
+ col{width:auto;} thead{display:table-header-group;} tfoot{display:table-footer-group;}
+ th{background:#1f4e78;color:#fff;border:1px solid #163a5a;padding:7px 6px;text-align:center;font-weight:700;font-size:9pt;vertical-align:middle;}
+ td{border:1px solid #b9c5d1;padding:6px 6px;vertical-align:top;word-wrap:break-word;overflow-wrap:break-word;font-size:9pt;}
+ tbody tr:nth-child(even) td{background:#f5f8fb;} tbody tr{page-break-inside:avoid;}
+ .number{text-align:right;mso-number-format:"0.00";} .money{text-align:right;mso-number-format:"#,##0.00";}
+ .foot{margin-top:9px;border-top:1px solid #c7d4e0;padding-top:5px;font-size:8pt;color:#6b7280;}
+ </style></head><body><div class="report">
+ <div class="head"><div class="company">${company}</div><div class="reportTitle">${esc(title)}</div>${tag ? `<div class="meta">${tag}</div>` : ''}<div class="meta">Generated: ${generated}</div></div>
+ ${summary}<table><colgroup>${widths.map(w => `<col style="width:${w}ch">`).join('')}</colgroup><thead>${headers.length ? '<tr>' + headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr>' : ''}</thead><tbody>${tableRows || '<tr><td colspan="' + colCount + '">No records found.</td></tr>'}</tbody></table>
+ <div class="foot">${company} &nbsp;•&nbsp; ${esc(title)} &nbsp;•&nbsp; Generated ${generated}</div></div></body></html>`;
+      downloadBlob(html, title.replace(/\s+/g, '_') + '_' + stamp + '.xls', 'application/vnd.ms-excel;charset=utf-8'); toast('Styled Excel report exported');
+    }
+
+    function printTravel() {
+      const travelPage = $('travel');
+      const travelTitle = travelPage.querySelector('.title');
+      if (!travelPage || !travelTitle) {
+        alert('Travel Claim Report could not be prepared. Please refresh the page and try again.');
+        return;
+      }
+
+      // Refresh the report so the exported statement includes the current filters and totals.
+      renderTravel();
+
+      document.querySelectorAll('.page').forEach(x => {
+        x.classList.remove('printable');
+        x.classList.remove('active');
+      });
+      const oldTitle = travelTitle.innerHTML;
+      travelPage.classList.add('printable');
+      travelPage.classList.add('active');
+      travelTitle.innerHTML = `<div><div class="printCompany">${esc(settings.company)}</div><div class="printTitle">TRAVEL CLAIM STATEMENT</div><div class="sub">${esc(settings.tag || '')}</div></div>`;
+
+      const restore = () => {
+        travelTitle.innerHTML = oldTitle;
+        travelPage.classList.remove('printable');
+        travelPage.classList.add('active');
+        document.querySelectorAll('.navbtn').forEach(x => x.classList.toggle('active', x.dataset.page === 'travel'));
+      };
+      window.addEventListener('afterprint', restore, { once: true });
+      window.print();
+      // Fallback for browsers that do not fire afterprint reliably.
+      setTimeout(restore, 1500);
+    }
+
+    function loadSettings() { $('companyName').value = settings.company || 'DORIC MULTIMEDIA PVT LTD'; $('companyTag').value = settings.tag || ''; $('products').value = products.join('\n') }
+    function saveSettings() { try { settings.company = $('companyName').value.trim() || 'DORIC MULTIMEDIA PVT LTD'; settings.tag = $('companyTag').value.trim(); localStorage.setItem(SET, JSON.stringify(settings)); toast('Settings saved successfully') } catch (err) { console.error(err); toast('Settings could not be saved') } }
+    function saveProducts() { try { const list = $('products').value.split(/\r?\n/).map(x => x.trim()).filter(Boolean); if (!list.length) { toast('Enter at least one product'); return } products = [...new Set(list)]; localStorage.setItem(PROD, JSON.stringify(products)); fillProducts(); renderPriceMaster(); toast('Product master updated successfully') } catch (err) { console.error(err); toast('Products could not be saved') } }
+
+    function backupData() { let data = { version: 7, exportedAt: new Date().toISOString(), settings, products, priceMaster, visits, tasks, leads, travelClaims: travelClaims || [], reminders: reminderStore() }; let a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })); a.download = 'DoricTrack_Backup_' + today() + '.json'; a.click(); URL.revokeObjectURL(a.href) }
+    function restoreData(e) { let f = e.target.files[0]; if (!f) return; let r = new FileReader(); r.onload = () => { try { let d = JSON.parse(r.result); if (!Array.isArray(d.visits)) throw Error('Invalid'); visits = d.visits; settings = d.settings || settings; products = d.products || products; priceMaster = d.priceMaster || priceMaster; localStorage.setItem(KEY, JSON.stringify(visits)); localStorage.setItem(SET, JSON.stringify(settings)); localStorage.setItem(PROD, JSON.stringify(products)); localStorage.setItem(PRICE, JSON.stringify(priceMaster)); if (d.reminders) localStorage.setItem(REM, JSON.stringify(d.reminders)); else localStorage.removeItem(REM); tasks = Array.isArray(d.tasks) ? d.tasks : []; taskStoreSave(); leads = Array.isArray(d.leads) ? d.leads : []; leadStoreSave(); travelClaims = Array.isArray(d.travelClaims) ? d.travelClaims : null; if (Array.isArray(travelClaims)) travelStoreSave(); else initTravelClaims(); fillProducts(); renderTravelCompanies(); toast('Backup restored'); renderDashboard(); renderTasks(); renderReminders(); renderTravel() } catch (err) { alert('Invalid backup file') } }; r.readAsText(f) }
+    function printVisits() { document.querySelectorAll('.page').forEach(x => x.classList.remove('printable')); $('visits').classList.add('printable'); window.print(); setTimeout(() => { $('visits').classList.remove('printable'); $('visits').classList.add('active') }, 500) }
+    function printReports() { document.querySelectorAll('.page').forEach(x => x.classList.remove('printable')); $('reports').classList.add('printable'); window.print(); setTimeout(() => { $('reports').classList.remove('printable'); $('reports').classList.add('active') }, 500) }
+    window.editTravelClaim = editTravelClaim;
+    window.deleteTravelClaim = deleteTravelClaim;
+    $('travelRows').addEventListener('click', function (e) {
+      const edit = e.target.closest('.travel-edit-btn');
+      const del = e.target.closest('.travel-delete-btn');
+      if (edit) { editTravelClaim(edit.dataset.id); return; }
+      if (del) { deleteTravelClaim(del.dataset.id); return; }
+    });
+    $('visitForm').addEventListener('submit', saveVisit); $('leadForm').addEventListener('submit', saveLead); $('travelClaimForm').addEventListener('submit', saveTravelClaim); $('taskDate').value = today(); $('leadDate').value = today(); $('taskDue').value = today(); $('tcDate').value = today(); $('vProduct').addEventListener('change', () => applyProductPrice('vProduct', 'vPrice')); $('vAdditional').addEventListener('change', () => applyProductPrice('vAdditional', 'vAddPrice')); $('vPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vAddPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vRefPct').addEventListener('input', () => { commissionInputMode = 'pct'; refreshVisitProfit('pct') }); $('vRefComm').addEventListener('input', () => { commissionInputMode = 'rupee'; refreshVisitProfit('rupee') }); $('vDate').value = today(); fillProducts(); initTravelClaims(); renderDashboard(); renderTasks(); renderLeads(); renderReminders(); renderTravel(); initAuth(); setInterval(() => { if (sessionStorage.getItem(AUTH_SESSION) === '1') { renderTasks(); renderReminders(); checkReminderNotifications(false) } }, 60000);</script>
+</body>
+
+</html>
