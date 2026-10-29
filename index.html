@@ -973,16 +973,16 @@
       <h2 id="authTitle">Sign In</h2>
       <div class="sub" id="authSubtitle">Enter your DoricTrack ID and password to continue.</div>
       <div id="authError" class="authError"></div>
-      <div class="field"><label>DoricTrack ID</label><input id="authUser" autocomplete="username"
-          placeholder="Enter your ID"></div>
+      <div class="field"><label>Email address</label><input id="authUser" type="email" autocomplete="username"
+          placeholder="Enter your cloud account email"></div>
       <div class="field"><label>Password</label><input id="authPass" type="password" autocomplete="current-password"
           placeholder="Enter your password" onkeydown="if(event.key==='Enter')submitAuth()"></div>
       <div id="authConfirmWrap" class="field" style="display:none"><label>Confirm Password</label><input
           id="authConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password"
           onkeydown="if(event.key==='Enter')submitAuth()"></div>
       <button id="authBtn" class="btn primary" style="width:100%;padding:12px" onclick="submitAuth()">Sign In</button>
-      <div class="authHint" id="authHint">Your login is stored only in this browser. Closing the app signs you out
-        automatically; your CRM data is not deleted.</div>
+      <button id="authModeToggle" class="btn light" style="width:100%;padding:10px;margin-top:8px" onclick="setAuthMode(authMode === 'signin' ? 'create' : 'signin')">Create cloud account</button>
+      <div class="authHint" id="authHint">Use the same cloud email and password on every device. Your CRM records stay in the cloud.</div>
     </div>
   </div>
   <header class="top">
@@ -1763,14 +1763,62 @@
     let authMode = 'signin';
     function authHash(value) { let h = 2166136261; for (let i = 0; i < value.length; i++) { h ^= value.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0).toString(16).padStart(8, '0'); }
     function hasCredentials() { return !!localStorage.getItem(AUTH_USER) && !!localStorage.getItem(AUTH_HASH) }
-    function setAuthMode(mode) { authMode = mode; const first = !hasCredentials(); $('authTitle').textContent = first ? 'Create Login' : (mode === 'signin' ? 'Sign In' : 'Create Login'); $('authSubtitle').textContent = first ? 'Create the ID and password you will use whenever DoricTrack Pro opens.' : 'Enter your DoricTrack ID and password to continue.'; $('authBtn').textContent = first ? 'Create Login' : (mode === 'signin' ? 'Sign In' : 'Create Login'); $('authConfirmWrap').style.display = (first || mode === 'create') ? 'block' : 'none'; $('authHint').textContent = first ? 'Choose an ID and password. This browser will require them after the app is closed.' : 'Your login is stored only in this browser. Closing the app signs you out automatically; your CRM data is not deleted.'; $('authError').style.display = 'none' }
-    function submitAuth() { const user = $('authUser').value.trim(), pass = $('authPass').value, confirmPass = $('authConfirm').value, first = !hasCredentials(); if (!user || !pass) { showAuthError('Please enter both ID and password.'); return } if (first || authMode === 'create') { if (pass.length < 4) { showAuthError('Password must be at least 4 characters.'); return } if (pass !== confirmPass) { showAuthError('Passwords do not match.'); return } localStorage.setItem(AUTH_USER, user); localStorage.setItem(AUTH_HASH, authHash(pass)); sessionStorage.setItem(AUTH_SESSION, '1'); unlockApp(user); toast('Login created successfully'); return } const savedUser = localStorage.getItem(AUTH_USER), savedHash = localStorage.getItem(AUTH_HASH); if (user !== savedUser || authHash(pass) !== savedHash) { showAuthError('Incorrect ID or password.'); return } sessionStorage.setItem(AUTH_SESSION, '1'); unlockApp(user) }
-    function showAuthError(msg) { $('authError').textContent = msg; $('authError').style.display = 'block' }
-    function unlockApp(user) { $('authOverlay').style.display = 'none'; $('sessionUser').textContent = 'Signed in: ' + user; renderDashboard(); renderTasks(); renderReminders(); setTimeout(() => checkReminderNotifications(false), 800) }
-    function lockApp() { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $('dashboard').classList.add('active'); $('authOverlay').style.display = 'flex'; $('authUser').value = ''; $('authPass').value = ''; $('authConfirm').value = ''; setAuthMode('signin') }
-    function signOut() { if (confirm('Sign out of DoricTrack Pro? Your saved CRM data will remain safe.')) { sessionStorage.removeItem(AUTH_SESSION); lockApp() } }
-    function changeCredentials() { const u = $('newAuthUser').value.trim(), p = $('newAuthPass').value, c = $('newAuthConfirm').value; if (!u || !p) { toast('Enter a new ID and password'); return } if (p.length < 4) { toast('Password must be at least 4 characters'); return } if (p !== c) { toast('Passwords do not match'); return } localStorage.setItem(AUTH_USER, u); localStorage.setItem(AUTH_HASH, authHash(p)); sessionStorage.setItem(AUTH_SESSION, '1'); $('newAuthUser').value = ''; $('newAuthPass').value = ''; $('newAuthConfirm').value = ''; $('sessionUser').textContent = 'Signed in: ' + u; toast('Login changed successfully') }
-    function initAuth() { if (!hasCredentials()) { setAuthMode('create'); $('authOverlay').style.display = 'flex' } else if (sessionStorage.getItem(AUTH_SESSION) === '1') { unlockApp(localStorage.getItem(AUTH_USER) || 'User') } else { setAuthMode('signin'); $('authOverlay').style.display = 'flex' } }
+    function setAuthMode(mode) {
+      authMode = mode;
+      $('authTitle').textContent = mode === 'create' ? 'Create Cloud Account' : 'Sign In';
+      $('authSubtitle').textContent = mode === 'create' ? 'Create your account once. Then use the same email and password on every device.' : 'Sign in with the same cloud account on every phone or laptop.';
+      $('authBtn').textContent = mode === 'create' ? 'Create Cloud Account' : 'Sign In & Sync';
+      $('authConfirmWrap').style.display = mode === 'create' ? 'block' : 'none';
+      $('authModeToggle').textContent = mode === 'create' ? 'Already have an account? Sign in' : 'Create cloud account';
+      $('authHint').textContent = 'Your data is stored in your Supabase cloud database and syncs across devices when you sign in with the same account.';
+      $('authError').style.display = 'none';
+    }
+    async function submitAuth() {
+      const email = $('authUser').value.trim(), pass = $('authPass').value, confirmPass = $('authConfirm').value;
+      if (!email || !pass) { showAuthError('Please enter your email address and password.'); return; }
+      if (authMode === 'create') {
+        if (pass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
+        if (pass !== confirmPass) { showAuthError('Passwords do not match.'); return; }
+        const c = ensureCloudClient(); if (!c) { showAuthError('Cloud connection is not configured.'); return; }
+        $('authBtn').disabled = true;
+        try {
+          const {data,error} = await c.auth.signUp({email,password:pass});
+          if (error) { showAuthError(error.message); return; }
+          if (data.session && data.user) { sessionStorage.setItem(AUTH_SESSION,'1'); await beginCloudSync(data.user.id); unlockApp(email); }
+          else { showAuthError('Account created. Confirm the email link, then return and sign in. If the link opens localhost, the Supabase Auth URL settings must be corrected first.'); }
+        } finally { $('authBtn').disabled = false; }
+        return;
+      }
+      const c = ensureCloudClient(); if (!c) { showAuthError('Cloud connection is not configured.'); return; }
+      $('authBtn').disabled = true;
+      try {
+        const {data,error} = await c.auth.signInWithPassword({email,password:pass});
+        if (error) { showAuthError(error.message); return; }
+        sessionStorage.setItem(AUTH_SESSION,'1');
+        await beginCloudSync(data.user.id);
+        if (cloudReady) unlockApp(email);
+        else showAuthError('Login succeeded, but cloud data did not load. Please check the cloud sync error and try again.');
+      } catch (e) { showAuthError(e?.message || 'Could not sign in. Check your internet connection.'); }
+      finally { $('authBtn').disabled = false; }
+    }
+    function showAuthError(msg) { $('authError').textContent = msg; $('authError').style.display = 'block'; }
+    function unlockApp(user) { $('authOverlay').style.display = 'none'; $('sessionUser').textContent = 'Signed in: ' + user; renderDashboard(); renderTasks(); renderLeads(); renderReminders(); renderTravel(); setTimeout(() => checkReminderNotifications(false), 800) }
+    function lockApp() { cloudReady = false; document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $('dashboard').classList.add('active'); $('authOverlay').style.display = 'flex'; $('authUser').value = ''; $('authPass').value = ''; $('authConfirm').value = ''; setAuthMode('signin') }
+    async function signOut() { if (confirm('Sign out of DoricTrack Pro? Your cloud records will remain safe.')) { const c=ensureCloudClient(); if(c) await c.auth.signOut(); sessionStorage.removeItem(AUTH_SESSION); lockApp(); } }
+    function changeCredentials() { toast('Use your cloud account email and password to sign in on every device.'); }
+    async function initAuth() {
+      setAuthMode('signin');
+      const c = ensureCloudClient();
+      if (!c) { $('authOverlay').style.display = 'flex'; return; }
+      try {
+        const {data:{session}} = await c.auth.getSession();
+        if (session?.user) {
+          sessionStorage.setItem(AUTH_SESSION,'1');
+          await beginCloudSync(session.user.id);
+          if (cloudReady) unlockApp(session.user.email || 'User'); else $('authOverlay').style.display = 'flex';
+        } else { $('authOverlay').style.display = 'flex'; }
+      } catch (_) { $('authOverlay').style.display = 'flex'; }
+    }
 
     function money(n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) }
     function productPrice(name) { return priceMaster[name] || { sell: 0, cost: null, refPct: 0 } }
@@ -2187,6 +2235,10 @@
     // --- Supabase cloud sync (opt-in; local data remains intact) ---
     const CLOUD_URL_KEY = 'dorictrack_cloud_project_url_v1';
     const CLOUD_PUBLIC_KEY = 'dorictrack_cloud_public_key_v1';
+    const DORIC_SUPABASE_URL = 'https://pccaqanzoyuynfiptmca.supabase.co';
+    const DORIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ZGlal1LvgeBnVMKsg-hGug_xWyFeFkG';
+    localStorage.setItem(CLOUD_URL_KEY, DORIC_SUPABASE_URL);
+    localStorage.setItem(CLOUD_PUBLIC_KEY, DORIC_SUPABASE_PUBLISHABLE_KEY);
     const CLOUD_TABLE = 'dorictrack_user_data';
     const CLOUD_DATA_KEYS = [KEY, SET, PROD, REM, PRICE, TASK, LEAD, TRAVEL];
     let cloudClient = null, cloudReady = false, cloudSyncTimer = null, cloudSuppressWrites = false, lastCloudUpdatedAt = null, cloudPullBusy = false;
@@ -2208,7 +2260,7 @@
     }
     function ensureCloudClient(){
       if(cloudClient)return cloudClient;
-      const url=localStorage.getItem(CLOUD_URL_KEY),key=localStorage.getItem(CLOUD_PUBLIC_KEY);
+      const url=DORIC_SUPABASE_URL,key=DORIC_SUPABASE_PUBLISHABLE_KEY;
       if(!url||!key){cloudStatus('First enter the Supabase Project URL and publishable/anon key, then save settings.',true);return null}
       if(!window.supabase||!window.supabase.createClient){cloudStatus('Supabase SDK did not load. Check your internet connection and refresh.',true);return null}
       cloudClient=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});return cloudClient;
@@ -2294,7 +2346,7 @@
     setInterval(()=>{if(cloudReady)cloudRefreshFromServer(false)},15000);
     window.addEventListener('storage',(event)=>{if(event.storageArea===localStorage&&CLOUD_DATA_KEYS.includes(event.key))queueCloudSync()});
     // Restore saved project configuration on load; do not auto-upload until a user explicitly signs in.
-    document.addEventListener('DOMContentLoaded',()=>{const u=localStorage.getItem(CLOUD_URL_KEY),k=localStorage.getItem(CLOUD_PUBLIC_KEY);if(u&&k&&window.supabase?.createClient)cloudClient=window.supabase.createClient(u,k,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})});
+    document.addEventListener('DOMContentLoaded',()=>{if(window.supabase?.createClient)cloudClient=window.supabase.createClient(DORIC_SUPABASE_URL,DORIC_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})});
 
     window.editTravelClaim = editTravelClaim;
     window.deleteTravelClaim = deleteTravelClaim;
@@ -2306,7 +2358,7 @@
     });
     $('visitForm').addEventListener('submit', saveVisit); $('leadForm').addEventListener('submit', saveLead); $('travelClaimForm').addEventListener('submit', saveTravelClaim); $('taskDate').value = today(); $('leadDate').value = today(); $('taskDue').value = today(); $('tcDate').value = today(); $('vProduct').addEventListener('change', () => applyProductPrice('vProduct', 'vPrice')); $('vAdditional').addEventListener('change', () => applyProductPrice('vAdditional', 'vAddPrice')); $('vPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vAddPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vRefPct').addEventListener('input', () => { commissionInputMode = 'pct'; refreshVisitProfit('pct') }); $('vRefComm').addEventListener('input', () => { commissionInputMode = 'rupee'; refreshVisitProfit('rupee') }); $('vDate').value = today(); fillProducts(); initTravelClaims(); renderDashboard(); renderTasks(); renderLeads(); renderReminders(); renderTravel(); initAuth(); setInterval(() => { if (sessionStorage.getItem(AUTH_SESSION) === '1') { renderTasks(); renderReminders(); checkReminderNotifications(false) } }, 60000);</script>
 \n<style>
-  #cloudSyncLauncher{position:fixed;right:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:13px 17px;background:#0f766e;color:#fff;font-weight:700;box-shadow:0 8px 24px #0f172a30}
+  #cloudSyncLauncher{display:none;position:fixed;right:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:13px 17px;background:#0f766e;color:#fff;font-weight:700;box-shadow:0 8px 24px #0f172a30}
   #cloudSyncOverlay{display:none;position:fixed;inset:0;z-index:1001;background:#0f172a99;align-items:center;justify-content:center;padding:16px}
   #cloudSyncCard{background:#fff;color:#182230;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:22px;box-shadow:0 20px 70px #0004}
   #cloudSyncCard h2{margin:0 0 8px;font-size:22px} #cloudSyncCard p{line-height:1.45;color:#536174}
