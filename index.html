@@ -944,6 +944,16 @@
 @media(max-width:760px){.top{height:auto;min-height:60px;padding:10px 12px;gap:8px;flex-wrap:wrap}.logo h1{font-size:16px}.layout{display:block;min-height:calc(100vh - 60px)}.side{position:sticky;top:0;width:100%;height:auto;bottom:auto;display:flex;gap:5px;overflow-x:auto;white-space:nowrap;padding:7px;background:#111827;z-index:9}.navbtn{width:auto;flex:0 0 auto;margin:0;padding:9px 11px}.main{margin-left:0;width:100%;padding:13px}.title{gap:10px;flex-wrap:wrap}.tablewrap{overflow-x:auto;max-width:100%}table{min-width:680px}.grid,.stats,.formgrid{grid-template-columns:1fr!important}.actions{flex-wrap:wrap}.card{max-width:100%}}
 </style>
 
+
+  <meta name="theme-color" content="#1d4ed8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="DoricTrack Pro">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
 </head>
 
 <body>
@@ -974,15 +984,15 @@
       <div class="sub" id="authSubtitle">Enter your DoricTrack ID and password to continue.</div>
       <div id="authError" class="authError"></div>
       <div class="field"><label>Email address</label><input id="authUser" type="email" autocomplete="username"
-          placeholder="Enter your cloud account email"></div>
+          placeholder="Enter your email address"></div>
       <div class="field"><label>Password</label><input id="authPass" type="password" autocomplete="current-password"
           placeholder="Enter your password" onkeydown="if(event.key==='Enter')submitAuth()"></div>
       <div id="authConfirmWrap" class="field" style="display:none"><label>Confirm Password</label><input
           id="authConfirm" type="password" autocomplete="new-password" placeholder="Re-enter password"
           onkeydown="if(event.key==='Enter')submitAuth()"></div>
-      <button id="authBtn" class="btn primary" style="width:100%;padding:12px" onclick="submitAuth()">Sign In</button>
-      <button id="authModeToggle" class="btn light" style="width:100%;padding:10px;margin-top:8px" onclick="setAuthMode(authMode === 'signin' ? 'create' : 'signin')">Create cloud account</button>
-      <div class="authHint" id="authHint">Use the same cloud email and password on every device. Your CRM records stay in the cloud.</div>
+      <button id="authBtn" class="btn primary" style="width:100%;padding:12px" onclick="submitAuth()">Sign In &amp; Sync</button>
+      <button class="btn light" style="width:100%;padding:12px;margin-top:8px" onclick="createCloudAccountFromLogin()">Create Cloud Account</button>
+      <div class="authHint" id="authHint">Use the same email and password on every device. Your CRM data is stored in the cloud account.</div>
     </div>
   </div>
   <header class="top">
@@ -1759,66 +1769,17 @@
     if (localStorage.getItem(PRICE + '_version') !== PRICE_RULES_VERSION) { priceMaster = { ...priceMaster, ...defaultPriceMaster }; localStorage.setItem(PRICE, JSON.stringify(priceMaster)); localStorage.setItem(PRICE + '_version', PRICE_RULES_VERSION) }
     Object.keys(defaultPriceMaster).forEach(k => { if (!priceMaster[k]) priceMaster[k] = { ...defaultPriceMaster[k] }; if (priceMaster[k].refPct === undefined) priceMaster[k].refPct = 0 });
     const $ = id => document.getElementById(id);
-    const AUTH_USER = 'dorictrack_auth_user_v1', AUTH_HASH = 'dorictrack_auth_hash_v1', AUTH_SESSION = 'dorictrack_auth_session_v1';
+    const AUTH_SESSION = 'dorictrack_auth_session_v1';
     let authMode = 'signin';
-    function authHash(value) { let h = 2166136261; for (let i = 0; i < value.length; i++) { h ^= value.charCodeAt(i); h = Math.imul(h, 16777619) } return (h >>> 0).toString(16).padStart(8, '0'); }
-    function hasCredentials() { return !!localStorage.getItem(AUTH_USER) && !!localStorage.getItem(AUTH_HASH) }
-    function setAuthMode(mode) {
-      authMode = mode;
-      $('authTitle').textContent = mode === 'create' ? 'Create Cloud Account' : 'Sign In';
-      $('authSubtitle').textContent = mode === 'create' ? 'Create your account once. Then use the same email and password on every device.' : 'Sign in with the same cloud account on every phone or laptop.';
-      $('authBtn').textContent = mode === 'create' ? 'Create Cloud Account' : 'Sign In & Sync';
-      $('authConfirmWrap').style.display = mode === 'create' ? 'block' : 'none';
-      $('authModeToggle').textContent = mode === 'create' ? 'Already have an account? Sign in' : 'Create cloud account';
-      $('authHint').textContent = 'Your data is stored in your Supabase cloud database and syncs across devices when you sign in with the same account.';
-      $('authError').style.display = 'none';
-    }
-    async function submitAuth() {
-      const email = $('authUser').value.trim(), pass = $('authPass').value, confirmPass = $('authConfirm').value;
-      if (!email || !pass) { showAuthError('Please enter your email address and password.'); return; }
-      if (authMode === 'create') {
-        if (pass.length < 8) { showAuthError('Password must be at least 8 characters.'); return; }
-        if (pass !== confirmPass) { showAuthError('Passwords do not match.'); return; }
-        const c = ensureCloudClient(); if (!c) { showAuthError('Cloud connection is not configured.'); return; }
-        $('authBtn').disabled = true;
-        try {
-          const {data,error} = await c.auth.signUp({email,password:pass});
-          if (error) { showAuthError(error.message); return; }
-          if (data.session && data.user) { sessionStorage.setItem(AUTH_SESSION,'1'); await beginCloudSync(data.user.id); unlockApp(email); }
-          else { showAuthError('Account created. Confirm the email link, then return and sign in. If the link opens localhost, the Supabase Auth URL settings must be corrected first.'); }
-        } finally { $('authBtn').disabled = false; }
-        return;
-      }
-      const c = ensureCloudClient(); if (!c) { showAuthError('Cloud connection is not configured.'); return; }
-      $('authBtn').disabled = true;
-      try {
-        const {data,error} = await c.auth.signInWithPassword({email,password:pass});
-        if (error) { showAuthError(error.message); return; }
-        sessionStorage.setItem(AUTH_SESSION,'1');
-        await beginCloudSync(data.user.id);
-        if (cloudReady) unlockApp(email);
-        else showAuthError('Login succeeded, but cloud data did not load. Please check the cloud sync error and try again.');
-      } catch (e) { showAuthError(e?.message || 'Could not sign in. Check your internet connection.'); }
-      finally { $('authBtn').disabled = false; }
-    }
-    function showAuthError(msg) { $('authError').textContent = msg; $('authError').style.display = 'block'; }
-    function unlockApp(user) { $('authOverlay').style.display = 'none'; $('sessionUser').textContent = 'Signed in: ' + user; renderDashboard(); renderTasks(); renderLeads(); renderReminders(); renderTravel(); setTimeout(() => checkReminderNotifications(false), 800) }
-    function lockApp() { cloudReady = false; document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $('dashboard').classList.add('active'); $('authOverlay').style.display = 'flex'; $('authUser').value = ''; $('authPass').value = ''; $('authConfirm').value = ''; setAuthMode('signin') }
-    async function signOut() { if (confirm('Sign out of DoricTrack Pro? Your cloud records will remain safe.')) { const c=ensureCloudClient(); if(c) await c.auth.signOut(); sessionStorage.removeItem(AUTH_SESSION); lockApp(); } }
-    function changeCredentials() { toast('Use your cloud account email and password to sign in on every device.'); }
-    async function initAuth() {
-      setAuthMode('signin');
-      const c = ensureCloudClient();
-      if (!c) { $('authOverlay').style.display = 'flex'; return; }
-      try {
-        const {data:{session}} = await c.auth.getSession();
-        if (session?.user) {
-          sessionStorage.setItem(AUTH_SESSION,'1');
-          await beginCloudSync(session.user.id);
-          if (cloudReady) unlockApp(session.user.email || 'User'); else $('authOverlay').style.display = 'flex';
-        } else { $('authOverlay').style.display = 'flex'; }
-      } catch (_) { $('authOverlay').style.display = 'flex'; }
-    }
+    function setAuthMode(mode) { authMode = mode; $('authTitle').textContent = 'Sign In to DoricTrack Pro'; $('authSubtitle').textContent = 'Use the same cloud email and password on every device.'; $('authBtn').textContent = 'Sign In & Sync'; $('authConfirmWrap').style.display = 'none'; $('authHint').textContent = 'Your CRM records load from the cloud after login. New changes sync automatically when connected to the internet.'; $('authError').style.display = 'none' }
+    async function submitAuth() { const email = $('authUser').value.trim(), password = $('authPass').value; if (!email || !password) { showAuthError('Enter your email address and password.'); return } $('cloudEmail').value = email; $('cloudPassword').value = password; $('authBtn').disabled = true; try { await cloudSignIn(true); } finally { $('authBtn').disabled = false; } }
+    async function createCloudAccountFromLogin() { const email = $('authUser').value.trim(), password = $('authPass').value; if (!email || !password) { showAuthError('Enter your email address and choose a password of at least 8 characters.'); return } $('cloudEmail').value=email; $('cloudPassword').value=password; try { await cloudSignUp(true); } catch(e) { showAuthError(e.message || 'Account creation failed.'); } }
+    function showAuthError(msg) { $('authError').textContent = msg; $('authError').style.display = 'block' }
+    function unlockApp(user) { $('authOverlay').style.display = 'none'; $('sessionUser').textContent = 'Signed in: ' + user; renderDashboard(); renderTasks(); renderReminders(); setTimeout(() => checkReminderNotifications(false), 800) }
+    function lockApp() { document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); $('dashboard').classList.add('active'); $('authOverlay').style.display = 'flex'; $('authUser').value = ''; $('authPass').value = ''; $('authConfirm').value = ''; setAuthMode('signin') }
+    async function signOut() { if (confirm('Sign out of DoricTrack Pro? Your saved CRM data will remain safe in the cloud.')) { const c=ensureCloudClient(); if(c) await c.auth.signOut(); cloudReady=false; sessionStorage.removeItem(AUTH_SESSION); lockApp() } }
+    function changeCredentials() { toast('To change your password, use the Supabase account recovery flow.'); }
+    function initAuth() { setAuthMode('signin'); const c=ensureCloudClient(); if(c) c.auth.getSession().then(async ({data})=>{ if(data?.session?.user){ await beginCloudSync(data.session.user.id); if(cloudReady){sessionStorage.setItem(AUTH_SESSION,'1');unlockApp(data.session.user.email || 'User')} else $('authOverlay').style.display='flex'; } else $('authOverlay').style.display='flex'; }).catch(()=>{$('authOverlay').style.display='flex'}); else $('authOverlay').style.display='flex'; }
 
     function money(n) { return '₹' + Number(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 }) }
     function productPrice(name) { return priceMaster[name] || { sell: 0, cost: null, refPct: 0 } }
@@ -2128,7 +2089,17 @@
         const rows = exportRows('leads'), headers = exportHeaders('leads'), uq = new Set(rows.map(r => String(r[3] || '').replace(/\D/g, '') || String(r[2] || '').toLowerCase())).size, qf = rows.filter(r => r[7] === 'Qualified' || r[7] === 'Converted').length, cv = rows.filter(r => r[7] === 'Converted').length;
         const generated = new Date().toLocaleString('en-IN');
         const body = rows.map(r => '<tr>' + r.map((v, i) => '<td>' + esc(v) + '</td>').join('') + '</tr>').join('');
-        return '<!doctype html><html><head><meta charset="UTF-8"><title>' + esc(settings.company) + ' - Lead Calling Report</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0;font-size:22px}h2{margin:4px 0 14px;font-size:16px}.meta{color:#667085;font-size:12px;margin:5px 0 12px}.summary{display:flex;gap:24px;background:#eef4f9;border:1px solid #c7d4e0;padding:9px 12px;margin:12px 0}.summary b{margin-right:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1f4e78;color:#fff;padding:8px;border:1px solid #163a5a}td{padding:7px;border:1px solid #c7d4e0;vertical-align:top}tbody tr:nth-child(even){background:#f7f9fb}@media print{@page{size:A4 landscape;margin:.4in}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><h1>' + esc(settings.company) + '</h1><h2>Lead Calling Report</h2><div class="meta">Generated: ' + esc(generated) + '</div><div class="summary"><span><b>Total Calls:</b>' + rows.length + '</span><span><b>Unique Leads:</b>' + uq + '</span><span><b>Qualified:</b>' + qf + '</span><span><b>Converted:</b>' + cv + '</span><span><b>Qualification:</b>' + (rows.length ? Math.round(qf / rows.length * 100) : 0) + '%</span></div><table><thead><tr>' + headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table><div class="meta">' + esc(settings.company) + ' • Lead Calling Report • ' + esc(generated) + '</div></body></html>';
+        return '<!doctype html><html><head><meta charset="UTF-8"><title>' + esc(settings.company) + ' - Lead Calling Report</title><style>body{font-family:Arial,sans-serif;color:#172033;margin:28px}h1{margin:0;font-size:22px}h2{margin:4px 0 14px;font-size:16px}.meta{color:#667085;font-size:12px;margin:5px 0 12px}.summary{display:flex;gap:24px;background:#eef4f9;border:1px solid #c7d4e0;padding:9px 12px;margin:12px 0}.summary b{margin-right:4px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1f4e78;color:#fff;padding:8px;border:1px solid #163a5a}td{padding:7px;border:1px solid #c7d4e0;vertical-align:top}tbody tr:nth-child(even){background:#f7f9fb}@media print{@page{size:A4 landscape;margin:.4in}thead{display:table-header-group}tr{page-break-inside:avoid}}</style></head><body><h1>' + esc(settings.company) + '</h1><h2>Lead Calling Report</h2><div class="meta">Generated: ' + esc(generated) + '</div><div class="summary"><span><b>Total Calls:</b>' + rows.length + '</span><span><b>Unique Leads:</b>' + uq + '</span><span><b>Qualified:</b>' + qf + '</span><span><b>Converted:</b>' + cv + '</span><span><b>Qualification:</b>' + (rows.length ? Math.round(qf / rows.length * 100) : 0) + '%</span></div><table><thead><tr>' + headers.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + body + '</tbody></table><div class="meta">' + esc(settings.company) + ' • Lead Calling Report • ' + esc(generated) + '</div>
+<script>
+// PWA shell caching only. Supabase/auth/API responses are deliberately never cached.
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('PWA service worker:', err));
+  });
+}
+</script>
+
+</body></html>';
       }
       let page = $(type); if (!page) page = $('dashboard'); let clone = page.cloneNode(true); clone.querySelectorAll('.no-print,.actions,button,input,select').forEach(x => x.remove());
       let styles = document.querySelector('style').innerHTML;
@@ -2235,19 +2206,16 @@
     // --- Supabase cloud sync (opt-in; local data remains intact) ---
     const CLOUD_URL_KEY = 'dorictrack_cloud_project_url_v1';
     const CLOUD_PUBLIC_KEY = 'dorictrack_cloud_public_key_v1';
+    // Project connection is preconfigured so users only enter their email and password.
     const DORIC_SUPABASE_URL = 'https://pccaqanzoyuynfiptmca.supabase.co';
     const DORIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ZGlal1LvgeBnVMKsg-hGug_xWyFeFkG';
-    localStorage.setItem(CLOUD_URL_KEY, DORIC_SUPABASE_URL);
-    localStorage.setItem(CLOUD_PUBLIC_KEY, DORIC_SUPABASE_PUBLISHABLE_KEY);
     const CLOUD_TABLE = 'dorictrack_user_data';
     const CLOUD_DATA_KEYS = [KEY, SET, PROD, REM, PRICE, TASK, LEAD, TRAVEL];
     let cloudClient = null, cloudReady = false, cloudSyncTimer = null, cloudSuppressWrites = false, lastCloudUpdatedAt = null, cloudPullBusy = false;
     function cloudStatus(message, bad=false) { const el = document.getElementById('cloudSyncStatus'); if (el) { el.textContent = message; el.style.background = bad ? '#fef2f2' : '#f1f5f9'; el.style.color = bad ? '#991b1b' : '#172033'; } }
     function openCloudSyncPanel() {
       document.getElementById('cloudSyncOverlay').style.display='flex';
-      document.getElementById('cloudProjectUrl').value=localStorage.getItem(CLOUD_URL_KEY)||'';
-      document.getElementById('cloudPublishableKey').value=localStorage.getItem(CLOUD_PUBLIC_KEY)||'';
-      if (cloudClient) cloudStatus('Cloud client is configured. Sign in to your cloud account or press Sync Now.');
+      if (cloudClient) cloudStatus('Cloud project is preconfigured. Sign in with your email if needed, or press Sync Now.');
     }
     function closeCloudSyncPanel(){document.getElementById('cloudSyncOverlay').style.display='none'}
     function saveCloudConfig(){
@@ -2260,24 +2228,28 @@
     }
     function ensureCloudClient(){
       if(cloudClient)return cloudClient;
-      const url=DORIC_SUPABASE_URL,key=DORIC_SUPABASE_PUBLISHABLE_KEY;
-      if(!url||!key){cloudStatus('First enter the Supabase Project URL and publishable/anon key, then save settings.',true);return null}
       if(!window.supabase||!window.supabase.createClient){cloudStatus('Supabase SDK did not load. Check your internet connection and refresh.',true);return null}
-      cloudClient=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});return cloudClient;
+      localStorage.setItem(CLOUD_URL_KEY,DORIC_SUPABASE_URL); localStorage.setItem(CLOUD_PUBLIC_KEY,DORIC_SUPABASE_PUBLISHABLE_KEY);
+      cloudClient=window.supabase.createClient(DORIC_SUPABASE_URL,DORIC_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});return cloudClient;
     }
-    async function cloudSignUp(){
+    async function cloudSignUp(fromGate=false){
       const c=ensureCloudClient();if(!c)return;const email=document.getElementById('cloudEmail').value.trim(),password=document.getElementById('cloudPassword').value;
-      if(!email||password.length<8){cloudStatus('Enter a valid email and a password of at least 8 characters.',true);return}
-      cloudStatus('Creating cloud account…');const {data,error}=await c.auth.signUp({email,password});
-      if(error){cloudStatus('Account creation failed: '+error.message,true);return}
-      if(data.session){await beginCloudSync(data.session.user.id)}else cloudStatus('Account created. Check your email to confirm it, then return here and press Sign In & Sync.');
+      if(!email||password.length<8){const m='Enter a valid email and a password of at least 8 characters.'; if(fromGate)showAuthError(m);else cloudStatus(m,true);return}
+      if(fromGate)showAuthError('Creating account… please wait.'); else cloudStatus('Creating cloud account…');
+      const redirectUrl = (location.protocol==='http:' || location.protocol==='https:') ? location.href.split('#')[0] : undefined;
+      const {data,error}=await c.auth.signUp({email,password,options: redirectUrl ? {emailRedirectTo:redirectUrl} : undefined});
+      if(error){if(fromGate)showAuthError('Account creation failed: '+error.message);else cloudStatus('Account creation failed: '+error.message,true);return}
+      if(data.session){await beginCloudSync(data.session.user.id);if(cloudReady){sessionStorage.setItem(AUTH_SESSION,'1');unlockApp(email)}}
+      else {const m='Account created. Check your email to confirm it, then reopen this app and sign in. Ensure Supabase Auth URL settings point to the hosted app URL.';if(fromGate)showAuthError(m);else cloudStatus(m)}
     }
-    async function cloudSignIn(){
+    async function cloudSignIn(fromGate=false){
       const c=ensureCloudClient();if(!c)return;const email=document.getElementById('cloudEmail').value.trim(),password=document.getElementById('cloudPassword').value;
-      if(!email||!password){cloudStatus('Enter your cloud account email and password.',true);return}
-      cloudStatus('Signing in to cloud…');const {data,error}=await c.auth.signInWithPassword({email,password});
-      if(error){cloudStatus('Cloud sign-in failed: '+error.message,true);return}
+      if(!email||!password){const m='Enter your cloud account email and password.';if(fromGate)showAuthError(m);else cloudStatus(m,true);return}
+      if(!fromGate)cloudStatus('Signing in to cloud…');
+      const {data,error}=await c.auth.signInWithPassword({email,password});
+      if(error){const m='Cloud sign-in failed: '+error.message;if(fromGate)showAuthError(m);else cloudStatus(m,true);return}
       await beginCloudSync(data.user.id);
+      if(cloudReady){sessionStorage.setItem(AUTH_SESSION,'1');unlockApp(data.user.email || email)} else if(fromGate)showAuthError('Login worked, but cloud data did not load. Check the error in Cloud Sync.');
     }
     async function cloudSignOut(){const c=ensureCloudClient();if(!c)return;const {error}=await c.auth.signOut();cloudReady=false;if(error){cloudStatus('Cloud sign-out error: '+error.message,true);return}cloudStatus('Signed out of cloud. Local records remain available on this device.');}
     function cloudSnapshot(){const out={};CLOUD_DATA_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!==null)out[k]=v});return out}
@@ -2346,7 +2318,7 @@
     setInterval(()=>{if(cloudReady)cloudRefreshFromServer(false)},15000);
     window.addEventListener('storage',(event)=>{if(event.storageArea===localStorage&&CLOUD_DATA_KEYS.includes(event.key))queueCloudSync()});
     // Restore saved project configuration on load; do not auto-upload until a user explicitly signs in.
-    document.addEventListener('DOMContentLoaded',()=>{if(window.supabase?.createClient)cloudClient=window.supabase.createClient(DORIC_SUPABASE_URL,DORIC_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})});
+    document.addEventListener('DOMContentLoaded',()=>{localStorage.setItem(CLOUD_URL_KEY,DORIC_SUPABASE_URL);localStorage.setItem(CLOUD_PUBLIC_KEY,DORIC_SUPABASE_PUBLISHABLE_KEY);if(window.supabase?.createClient)cloudClient=window.supabase.createClient(DORIC_SUPABASE_URL,DORIC_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})});
 
     window.editTravelClaim = editTravelClaim;
     window.deleteTravelClaim = deleteTravelClaim;
@@ -2358,7 +2330,7 @@
     });
     $('visitForm').addEventListener('submit', saveVisit); $('leadForm').addEventListener('submit', saveLead); $('travelClaimForm').addEventListener('submit', saveTravelClaim); $('taskDate').value = today(); $('leadDate').value = today(); $('taskDue').value = today(); $('tcDate').value = today(); $('vProduct').addEventListener('change', () => applyProductPrice('vProduct', 'vPrice')); $('vAdditional').addEventListener('change', () => applyProductPrice('vAdditional', 'vAddPrice')); $('vPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vAddPrice').addEventListener('input', () => refreshVisitProfit(commissionInputMode)); $('vRefPct').addEventListener('input', () => { commissionInputMode = 'pct'; refreshVisitProfit('pct') }); $('vRefComm').addEventListener('input', () => { commissionInputMode = 'rupee'; refreshVisitProfit('rupee') }); $('vDate').value = today(); fillProducts(); initTravelClaims(); renderDashboard(); renderTasks(); renderLeads(); renderReminders(); renderTravel(); initAuth(); setInterval(() => { if (sessionStorage.getItem(AUTH_SESSION) === '1') { renderTasks(); renderReminders(); checkReminderNotifications(false) } }, 60000);</script>
 \n<style>
-  #cloudSyncLauncher{display:none;position:fixed;right:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:13px 17px;background:#0f766e;color:#fff;font-weight:700;box-shadow:0 8px 24px #0f172a30}
+  #cloudSyncLauncher{position:fixed;right:18px;bottom:18px;z-index:1000;border:0;border-radius:999px;padding:13px 17px;background:#0f766e;color:#fff;font-weight:700;box-shadow:0 8px 24px #0f172a30}
   #cloudSyncOverlay{display:none;position:fixed;inset:0;z-index:1001;background:#0f172a99;align-items:center;justify-content:center;padding:16px}
   #cloudSyncCard{background:#fff;color:#182230;width:min(620px,100%);max-height:92vh;overflow:auto;border-radius:16px;padding:22px;box-shadow:0 20px 70px #0004}
   #cloudSyncCard h2{margin:0 0 8px;font-size:22px} #cloudSyncCard p{line-height:1.45;color:#536174}
@@ -2375,14 +2347,12 @@
  <div id="cloudSyncCard">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h2 id="cloudSyncHeading">DoricTrack Pro — Cloud Sync</h2><button class="btn light" type="button" onclick="closeCloudSyncPanel()">✕</button></div>
   <p>Connect this app to your own Supabase project so your visits, tasks, leads, travel claims, reminders and settings can sync between devices. First create the project and database table using the included setup instructions.</p>
-  <label for="cloudProjectUrl">Supabase Project URL</label><input id="cloudProjectUrl" placeholder="https://your-project-id.supabase.co" autocomplete="url">
-  <label for="cloudPublishableKey">Supabase publishable / anon key</label><input id="cloudPublishableKey" placeholder="sb_publishable_… or legacy anon key" autocomplete="off">
-  <div class="cloudActions"><button type="button" onclick="saveCloudConfig()">Save Project Settings</button><button class="secondary" type="button" onclick="cloudSignUp()">Create Cloud Account</button><button class="secondary" type="button" onclick="cloudSignIn()">Sign In & Sync</button></div>
-  <label for="cloudEmail">Cloud account email</label><input id="cloudEmail" type="email" placeholder="you@example.com" autocomplete="email">
-  <label for="cloudPassword">Cloud account password</label><input id="cloudPassword" type="password" placeholder="At least 8 characters" autocomplete="current-password">
+  <p><b>Project:</b> already configured. You do not need to enter a URL or publishable key on each device.</p>
+  <input id="cloudEmail" type="email" autocomplete="email" style="display:none">
+  <input id="cloudPassword" type="password" autocomplete="current-password" style="display:none">
   <div class="cloudActions"><button type="button" onclick="cloudSyncNow()">Sync Now</button><button class="secondary" type="button" onclick="cloudSignOut()">Sign Out of Cloud</button></div>
   <div id="cloudSyncStatus" role="status">Cloud sync is not connected. Your existing local records are unchanged.</div>
-  <p style="font-size:12px"><b>Security:</b> use only the project URL and publishable/anon key. Never paste a <code>service_role</code> or secret key here. The cloud account is separate from your current local DoricTrack login.</p>
+  <p style="font-size:12px"><b>Security:</b> project connection is built into this app. Never place a Supabase secret/service-role key in browser code.</p>
  </div>
 </div>
 
